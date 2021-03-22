@@ -2,6 +2,7 @@ import Vue from 'vue';
 import {
   Header,
   Main,
+  Footer,
   Container,
   Row,
   Col,
@@ -24,6 +25,7 @@ import './assets/scss/common.scss';
 
 Vue.use(Header);
 Vue.use(Main);
+Vue.use(Footer);
 Vue.use(Container);
 Vue.use(Row);
 Vue.use(Col);

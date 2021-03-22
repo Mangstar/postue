@@ -14,7 +14,6 @@ module.exports = {
     parser: 'babel-eslint'
   },
   rules: {
-    'vue/no-async-in-computed-properties': 'error',
     'semi': ['error', 'always'],
     'indent': ['error', 2],
     'linebreak-style': ['error', 'unix'],
@@ -49,8 +48,7 @@ module.exports = {
       'kebab-case'
     ],
     'vue/html-indent': [
-      'error',
-      2,
+      'error', 2,
       {
         'attribute': 1,
         'baseIndent': 1,

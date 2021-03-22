@@ -100,10 +100,6 @@ export default {
           value: filter.type === 'text' ? '' : []
         }));
       }
-    },
-
-    isVisible: (val, oldVal) => {
-      console.log('val', this);
     }
   },
 
@@ -118,7 +114,7 @@ export default {
     clear () {
       this.isVisible = false;
       this.possibleValues.forEach(item => {
-        item.value = [];
+        item.value = item.type === 'text' ? '' : [];
       });
     },
 

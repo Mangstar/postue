@@ -22,9 +22,7 @@ export default new Vuex.Store({
     },
 
     ui: {
-      error: {
-
-      }
+      error: null
     }
   },
 
@@ -84,8 +82,8 @@ export default new Vuex.Store({
       state.filter.users = payload;
     },
 
-    setApiResponseError (state, payload) {
-      state.apiResponseError = payload;
+    setUIError (state, payload) {
+      state.ui.error = payload;
     }
   },
 
@@ -122,7 +120,7 @@ export default new Vuex.Store({
       }
     },
 
-    setApiResponseError (context, payload) {
+    setUIError (context, payload) {
       const status = payload.status;
       const defaultMessages = {
         401: 'Вы не авторизановы',
@@ -131,7 +129,7 @@ export default new Vuex.Store({
       };
       const message = payload.message ?? defaultMessages[status] + ' (' + payload.url + ')';
 
-      context.commit('setApiResponseError', message);
+      context.commit('setUIError', message);
     }
   },
 

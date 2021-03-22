@@ -1,28 +1,8 @@
 <template>
   <div v-cloak id="app">
-    <el-header>
-      <el-container>
-        <h1>
-          Postue
-        </h1>
-      </el-container>
-    </el-header>
+    <app-header />
 
-    <div v-if="isLoading"
-         v-loading="isLoading"
-         class="app-loading"
-    />
-
-    <div>
-      <share-post-modal v-model="showShareModal"
-                        :post="postToShare"
-                        @input="postToShare = null"
-      />
-    </div>
-
-    <div>
-      <create-post-modal v-model="showPostModal" />
-    </div>
+    <app-loading :show="isLoading" />
 
     <el-main>
       <el-container class="mb-20">
@@ -63,20 +43,31 @@
           </el-col>
         </el-row>
       </el-container>
+
+      <share-post-modal v-model="showShareModal"
+                        :post="postToShare"
+                        @input="postToShare = null"
+      />
+
+      <create-post-modal v-model="showPostModal" />
     </el-main>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters } from 'vuex';
+import AppHeader from './components/layout/header';
+import AppLoading from './components/loading';
 import AppFilter from './components/filter';
 import AppPost from './components/post';
-import SharePostModal from './components/share-post-modal';
-import CreatePostModal from './components/create-post-modal';
+import SharePostModal from './components/modals/share-post';
+import CreatePostModal from './components/modals/create-post';
 
 export default {
   name: 'app',
   components: {
+    AppHeader,
+    AppLoading,
     AppFilter,
     AppPost,
     SharePostModal,

@@ -3,6 +3,37 @@ import * as postService from './posts';
 import * as userService from './users';
 import store from '../store';
 
+const createResponseErrorData = (error) => {
+  let errorData;
+
+  if (error.response) {
+    const { status, config, data } = error.response;
+    errorData = {
+      status,
+      success: false,
+      url: config.baseURL + config.url,
+      message: data.message
+    };
+  } else if (error.request) {
+    const { status } = error.request;
+    const { config } = error.toJSON();
+
+    errorData = {
+      status,
+      success: false,
+      url: config.baseURL + config.url,
+      message: 'Ошибка сети. Повторите попытку.'
+    };
+  } else {
+    errorData = {
+      success: false,
+      message: error.message
+    };
+  }
+
+  return errorData;
+};
+
 const transport = axios.create({
   baseURL: 'https://jsonplaceholder.typicode.com/'
 });
@@ -13,27 +44,16 @@ transport.interceptors.request.use(
 );
 transport.interceptors.response.use(
   response => {
-    return {
-      success: true,
-      ...response
-    };
+    const successRequest = { success: true };
+
+    return Object.assign(successRequest, response);
   },
   error => {
-    if (error.response) {
-      const { status, config, data } = error.response;
-      const errorData = {
-        status: status,
-        success: false,
-        url: config.baseURL + config.url,
-        message: data.message
-      };
+    const errorData = createResponseErrorData(error);
 
-      store.dispatch('setApiResponseError', errorData);
+    store.dispatch('setUIError', errorData);
 
-      return errorData;
-    }
-
-    return Promise.reject(error);
+    return errorData;
   }
 );
 
