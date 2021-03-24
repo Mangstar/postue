@@ -2,37 +2,8 @@ import axios from 'axios';
 import * as postService from './posts';
 import * as userService from './users';
 import store from '../store';
-
-const createResponseErrorData = (error) => {
-  let errorData;
-
-  if (error.response) {
-    const { status, config, data } = error.response;
-    errorData = {
-      status,
-      success: false,
-      url: config.baseURL + config.url,
-      message: data.message
-    };
-  } else if (error.request) {
-    const { status } = error.request;
-    const { config } = error.toJSON();
-
-    errorData = {
-      status,
-      success: false,
-      url: config.baseURL + config.url,
-      message: 'Ошибка сети. Повторите попытку.'
-    };
-  } else {
-    errorData = {
-      success: false,
-      message: error.message
-    };
-  }
-
-  return errorData;
-};
+// import router from '../router';
+import { createResponseErrorData } from './utils';
 
 const transport = axios.create({
   baseURL: 'https://jsonplaceholder.typicode.com/'

@@ -5,6 +5,7 @@ import { users } from './modules';
 
 import * as postService from '../services/posts';
 import * as userService from '../services/users';
+import router from '../router';
 
 Vue.use(Vuex);
 
@@ -96,11 +97,39 @@ export default new Vuex.Store({
       }
     },
 
-    async fetchPosts (context) {
+    async fetchAll (context) {
       const response = await postService.fetchAll();
 
       if (response.success) {
         context.commit('setPosts', response.data);
+      }
+    },
+
+    async fetchOne (context, payload) {
+      const postResponse = await postService.fetchOne(payload);
+      const responseComments = await postService.fetchPostComments(payload);
+
+      if (postResponse.success && responseComments.success) {
+        return {
+          ...postResponse.data,
+          comments: responseComments.data
+        };
+      }
+    },
+
+    async fetchPreview (context, payload) {
+      const response = await postService.fetchPreview(payload);
+
+      if (response.success) {
+        return response.data;
+      }
+    },
+
+    async fetchPostComments (context, payload) {
+      const response = await postService.fetchPostComments(payload);
+
+      if (response.success) {
+        return response.data;
       }
     },
 
@@ -129,7 +158,15 @@ export default new Vuex.Store({
       };
       const message = payload.message ?? defaultMessages[status] + ' (' + payload.url + ')';
 
-      context.commit('setUIError', message);
+      context.commit('setUIError', {
+        status,
+        url: payload.url,
+        message
+      });
+
+      if (status === 404) {
+        router.push({ name: '404' });
+      }
     }
   },
 

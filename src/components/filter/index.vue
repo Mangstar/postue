@@ -2,7 +2,7 @@
   <el-popover v-model="isVisible"
               trigger="manual"
               placement="bottom"
-              width="300"
+              width="400"
   >
     <template v-slot:reference>
       <div class="filter-reference" @click="isVisible = !isVisible">
@@ -15,7 +15,7 @@
                   closable
                   :disable-transitions="false"
                   @click.native.stop
-                  @close.stop="deleteSelected(tag.key)"
+                  @close.stop="deleteSelectedFilter(tag.key)"
           >
             {{ tag.name }}
           </el-tag>
@@ -28,9 +28,7 @@
              class="mb-15"
     >
       <div class="mb-5">
-        <strong v-if="filter.name">
-          {{ filter.name }}:
-        </strong>
+        <strong>{{ filter.name }}:</strong>
       </div>
 
       <template v-if="filter.type === 'text'">
@@ -69,65 +67,68 @@
 export default {
   name: 'app-filter',
 
-  props: {
-    filters: {
-      type: Array,
-      required: true
-    }
-  },
-
   data () {
     return {
       isVisible: false,
 
-      possibleValues: []
+      filters: [
+        {
+          name: 'Название',
+          value: '',
+          key: 'name',
+          type: 'text',
+          placeholder: 'Введите название',
+          commit: 'setFilterName'
+        },
+        {
+          name: 'Пользователи',
+          value: [],
+          key: 'users',
+          type: 'select',
+          placeholder: 'Выберете пользователей',
+          options: this.$store.getters['users/selectOptions'],
+          commit: 'setFilterUsers'
+        }
+      ]
     };
   },
 
   computed: {
     selectedValues () {
-      return this.possibleValues.filter(item => item.value.length > 0);
-    }
-  },
-
-  watch: {
-    filters: {
-      immediate: true,
-      handler () {
-        this.possibleValues = this.filters.map(filter => ({
-          name: filter.name,
-          key: filter.key,
-          value: filter.type === 'text' ? '' : []
-        }));
-      }
+      return this.filters.filter(filter => filter.value.length > 0);
     }
   },
 
   methods: {
     submit () {
-      this.$emit('submit', [
-        ...this.selectedValues
-      ]);
-      this.isVisible = false;
-    },
+      const { commit } = this.$store;
 
-    clear () {
       this.isVisible = false;
-      this.possibleValues.forEach(item => {
-        item.value = item.type === 'text' ? '' : [];
+      this.filters.forEach(filter => {
+        commit(filter.commit, filter.value);
       });
     },
 
-    deleteSelected (tagId) {
-      this.possibleValues.find(item => item.key === tagId).value = [];
+    clear () {
+      const { commit } = this.$store;
 
-      this.$emit('submit', [
-        ...this.selectedValues
-      ]);
+      this.isVisible = false;
+      this.filters.forEach(filter => {
+        filter.value = filter.type === 'text' ? '' : [];
+        commit(filter.commit, filter.value);
+      });
+    },
+
+    deleteSelectedFilter (tagId) {
+      const { commit } = this.$store;
+      const filterToDelete = this.filters.find(filter => filter.key === tagId);
+
+      filterToDelete.value = filterToDelete.type === 'text' ? '' : [];
+      commit(filterToDelete.commit, filterToDelete.value);
     },
 
     getModel (key) {
-      return this.possibleValues.find(item => item.key === key);
+      return this.filters.find(filter => filter.key === key);
     }
   }
 };

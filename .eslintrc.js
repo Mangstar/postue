@@ -7,25 +7,25 @@ module.exports = {
   extends: [
     '@vue/standard',
     'plugin:vue/essential',
-    "plugin:vue/strongly-recommended",
-    "plugin:vue/recommended"
+    'plugin:vue/strongly-recommended',
+    'plugin:vue/recommended'
   ],
   parserOptions: {
     parser: 'babel-eslint'
   },
   rules: {
-    'semi': ['error', 'always'],
-    'indent': ['error', 2],
+    semi: ['error', 'always'],
+    indent: ['error', 2],
     'linebreak-style': ['error', 'unix'],
     'eol-last': ['off'],
     'no-trailing-spaces': 'off',
     'vue/max-attributes-per-line': [
       'error',
       {
-        'singleline': 5,
-        'multiline': {
-          'max': 1,
-          'allowFirstLine': true
+        singleline: 5,
+        multiline: {
+          max: 1,
+          allowFirstLine: true
         }
       }
     ],
@@ -37,7 +37,7 @@ module.exports = {
     'vue/no-multi-spaces': [
       'error',
       {
-        'ignoreProperties': true
+        ignoreProperties: true
       }
     ],
     'vue/require-prop-types': [
@@ -50,11 +50,11 @@ module.exports = {
     'vue/html-indent': [
       'error', 2,
       {
-        'attribute': 1,
-        'baseIndent': 1,
-        'closeBracket': 0,
-        'alignAttributesVertically': true,
-        'ignores': []
+        attribute: 1,
+        baseIndent: 1,
+        closeBracket: 0,
+        alignAttributesVertically: true,
+        ignores: []
       }
     ],
     'vue/v-bind-style': [
@@ -64,4 +64,4 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
   }
-}
+};
