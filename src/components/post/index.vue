@@ -65,8 +65,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "../../assets/scss/_parts/_vars";
-
   .post-item {
     &.is-active {
       border: 3px solid $base-blue;

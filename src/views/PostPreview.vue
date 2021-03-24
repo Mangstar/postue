@@ -59,8 +59,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "../assets/scss/_parts/_vars";
-
   .post-preview {
     &-page {
       max-width: 580px;
