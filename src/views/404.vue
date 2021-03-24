@@ -1,6 +1,6 @@
 <template>
   <div class="error-page">
-    <h1>
+    <h1 class="main-title">
       404 Страница не найдена
     </h1>
 

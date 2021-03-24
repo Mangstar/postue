@@ -5,7 +5,6 @@ import { users } from './modules';
 
 import * as postService from '../services/posts';
 import * as userService from '../services/users';
-import router from '../router';
 
 Vue.use(Vuex);
 
@@ -163,10 +162,6 @@ export default new Vuex.Store({
         url: payload.url,
         message
       });
-
-      if (status === 404) {
-        router.push({ name: '404' });
-      }
     }
   },
 

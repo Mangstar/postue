@@ -8,27 +8,24 @@
       </router-link>
     </template>
 
-    <div class="mb-15">
+    <div class="base-text mb-15">
       {{ slicedBody }}
     </div>
 
     <div class="text-align-right">
       <el-button type="danger"
-                 size="small"
                  @click="$emit('delete-post', id)"
       >
         Удалить
       </el-button>
 
       <el-button type="primary"
-                 size="small"
                  @click="$emit('show-preview', id)"
       >
         Превью
       </el-button>
 
       <el-button type="success"
-                 size="small"
                  @click="$emit('share-post', id)"
       >
         Поделиться

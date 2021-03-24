@@ -1,5 +1,9 @@
 <template>
   <div class="home-page">
+    <h1 class="main-title">
+      Postue
+    </h1>
+
     <el-row type="flex"
             justify="space-between"
             align="middle"
@@ -10,7 +14,7 @@
       </el-col>
 
       <el-col :span="3" class="text-align-right">
-        <el-button type="primary" size="small" @click="open.addPostModal = true">
+        <el-button type="primary" size="middle" @click="open.addPostModal = true">
           Добавить пост
         </el-button>
       </el-col>
@@ -18,11 +22,11 @@
 
     <el-row type="flex" :gutter="30">
       <el-col :span="16">
-        <p v-if="visiblePosts.length === 0">
+        <p v-show="!hasPosts" class="base-text">
           Постов нет
         </p>
 
-        <el-row v-else type="flex" :gutter="20" class="f-wrap">
+        <el-row v-show="hasPosts" type="flex" :gutter="20" class="f-wrap">
           <el-col v-for="post in visiblePosts"
                   :key="post.id"
                   :span="8"
@@ -37,6 +41,7 @@
           </el-col>
         </el-row>
       </el-col>
+
       <el-col :span="8">
         <transition mode="out-in" name="show" appear>
           <router-view :key="$route.path" />
@@ -86,17 +91,25 @@ export default {
   computed: {
     ...mapGetters({
       visiblePosts: 'visiblePosts'
-    })
+    }),
+
+    hasPosts () {
+      return this.visiblePosts.length !== 0;
+    }
   },
 
-  async created () {
-    await this.loadPage();
+  created () {
+    this.loadPage();
   },
 
   methods: {
     async loadPage () {
       if (this.$store.state.posts.length === 0) {
+        this.$store.commit('startLoading');
+
         await this.$store.dispatch('fetchAll');
+
+        this.$store.commit('finishLoading');
       }
     },
 

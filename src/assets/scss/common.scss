@@ -6,6 +6,10 @@ body {
   line-height: 1.2;
 }
 
+p, h1, h2, h3, h4, h5, h6, ul, ol {
+  margin: 0;
+}
+
 .f-wrap {
   flex-wrap: wrap;
 }
@@ -31,6 +35,20 @@ body {
   color: red;
 }
 
+.main-title {
+  margin: 0 0 20px 0;
+  font-size: 64px;
+}
+
+.main-subtitle {
+  margin-bottom: 15px;
+  font-size: 40px;
+}
+
+[v-cloak] {
+  display: none;
+}
+
 .text-align-right {
   text-align: right;
 }
@@ -41,6 +59,7 @@ body {
 }
 
 .base-link {
+  font-size: 24px;
   text-decoration: none;
   color: $base-blue;
 
@@ -48,4 +67,9 @@ body {
     color: $base-blue-hover;
     text-decoration: underline;
   }
+}
+
+.base-text {
+  font-size: 24px;
+  color: $base-gray;
 }

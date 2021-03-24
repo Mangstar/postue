@@ -9,6 +9,11 @@
         <div class="filter-search">
           <i class="el-icon-search" />
         </div>
+
+        <div v-show="selectedValues.length === 0" class="filter-placeholder">
+          Поиск
+        </div>
+
         <div class="filter-tags">
           <el-tag v-for="tag in selectedValues"
                   :key="tag.key"
@@ -28,7 +33,7 @@
              class="mb-15"
     >
       <div class="mb-5">
-        <strong>{{ filter.name }}:</strong>
+        <strong class="filter-name">{{ filter.name }}:</strong>
       </div>
 
       <template v-if="filter.type === 'text'">
@@ -135,12 +140,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import "../../assets/scss/_parts/vars";
+
   .filter {
     &-reference {
       min-width: 300px;
       display: flex;
       align-items: center;
-      border: 1px solid #c5d9e8;
+      border: 1px solid $base-blue-hover;
       border-radius: 4px;
       cursor: pointer;
     }
@@ -154,6 +161,15 @@ export default {
       margin-right: 3px;
       background-color: #ececec;
       border-radius: 4px 0 0 4px;
+    }
+
+    &-placeholder {
+      font-size: 16px;
+      color: $base-gray;
+    }
+
+    &-name {
+      font-size: 24px;
     }
 
     &-actions {

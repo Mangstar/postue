@@ -1,12 +1,18 @@
 <template>
-  <div class="post-preview">
-    <h2 class="post-preview-title">
+  <div class="post-preview-page">
+    <h2 class="main-subtitle">
       {{ post.title }}
     </h2>
 
-    <p class="post-preview-text">
+    <p class="post-preview-text base-text">
       {{ post.body }}
     </p>
+
+    <div class="post-preview-actions">
+      <router-link :to="{ name: 'post-page', params: { id } }" class="base-link">
+        Открыть пост
+      </router-link>
+    </div>
   </div>
 </template>
 
@@ -56,26 +62,24 @@ export default {
   @import "../assets/scss/_parts/_vars";
 
   .post-preview {
-    max-width: 580px;
-    height: 50vh;
-    position: fixed;
-    top: 25%;
-    padding: 15px 25px;
-    box-sizing: border-box;
-    border: 2px solid $base-blue;
-    border-radius: 10px;
-    background-color: whitesmoke;
-
-    &-title {
-      margin: 0;
-      padding: 0;
-      font-size: 24px;
+    &-page {
+      max-width: 580px;
+      min-height: 50vh;
+      position: fixed;
+      top: 25%;
+      padding: 15px 25px;
+      box-sizing: border-box;
+      border: 2px solid $base-blue;
+      border-radius: 10px;
+      background-color: whitesmoke;
     }
 
     &-text {
       margin: 10px 0 0 0;
-      padding: 0;
-      font-size: 20px;
+    }
+
+    &-actions {
+      margin-top: 20px;
     }
   }
 </style>

@@ -4,7 +4,7 @@
 
     <app-loading :show="isLoading" />
 
-    <el-main>
+    <el-main v-if="appLoaded">
       <router-view />
     </el-main>
   </div>
@@ -23,15 +23,20 @@ export default {
     AppLoading
   },
 
-  computed: {
-    ...mapState({
-      isLoading: state => state.isLoading,
-      apiError: state => state.ui.error
-    })
+  data () {
+    return {
+      appLoaded: false
+    };
   },
 
-  async created () {
-    await this.loadApp();
+  computed: {
+    ...mapState([
+      'isLoading'
+    ])
+  },
+
+  created () {
+    this.loadApp();
   },
 
   methods: {
@@ -42,13 +47,9 @@ export default {
       await this.$store.dispatch('users/fetchUsers');
 
       this.$store.commit('finishLoading');
+
+      this.appLoaded = true;
     }
   }
 };
 </script>
-
-<style lang="scss">
-  [v-cloak] {
-    display: none;
-  }
-</style>

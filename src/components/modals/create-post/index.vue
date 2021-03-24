@@ -1,20 +1,26 @@
 <template>
-  <el-dialog :visible.sync="value"
+  <el-dialog :visible.sync="show"
              width="30%"
              title="Создать пост"
              class="modal-create-post"
              @close="close"
   >
+    <template v-slot:title>
+      <h3 style="font-size: 24px; text-align: center">
+        Создать пост
+      </h3>
+    </template>
+
     <section class="mb-15">
       <div class="mb-5">
-        <strong>Название: </strong>
+        <strong style="font-size: 24px;">Название: </strong>
       </div>
       <el-input v-model="title" placeholder="Введите название" />
     </section>
 
     <section>
       <div class="mb-5">
-        <strong>Содержание: </strong>
+        <strong style="font-size: 24px;">Содержание: </strong>
       </div>
       <el-input v-model="body" type="textarea" placeholder="Введите содержимое" />
     </section>
@@ -49,8 +55,15 @@ export default {
     return {
       title: '',
       body: '',
-      isLoading: false
+      isLoading: false,
+      show: false
     };
+  },
+
+  watch: {
+    value () {
+      this.show = this.value;
+    }
   },
 
   methods: {
@@ -72,7 +85,6 @@ export default {
     },
 
     close () {
-      console.log('close');
       this.title = '';
       this.body = '';
       this.$emit('input', false);

@@ -1,16 +1,16 @@
 <template>
-  <div class="container">
-    <div class="post-page">
-      <h1 class="post-title">
+  <div class="post-page">
+    <div class="container">
+      <h1 class="main-title">
         {{ post.title }}
       </h1>
 
-      <div class="post-body mb-20">
+      <div class="post-body base-text mb-20">
         {{ post.body }}
       </div>
 
       <div class="post-comments">
-        <h2 class="post-subtitle">
+        <h2 class="main-subtitle mb-20">
           Список комментариев
         </h2>
 
@@ -19,10 +19,10 @@
                  class="post-comment mb-20"
         >
           <template v-slot:header>
-            {{ comment.name }} ( {{ comment.email }} )
+            <h3>{{ comment.name }} ( email: {{ comment.email }} )</h3>
           </template>
 
-          <div class="comment-body">
+          <div class="comment-body base-text">
             {{ comment.body }}
           </div>
         </el-card>
@@ -59,7 +59,11 @@ export default {
 
   methods: {
     async loadPage () {
+      this.$store.commit('startLoading');
+
       this.post = await this.$store.dispatch('fetchOne', this.id);
+
+      this.$store.commit('finishLoading');
     }
   }
 };
@@ -67,23 +71,8 @@ export default {
 
 <style lang="scss" scoped>
   .post {
-    &-title {
-      margin: 0 0 20px 0;
-      font-size: 64px;
-    }
-
-    &-subtitle {
-      margin: 0 0 20px 0;
-      font-size: 52px;
-    }
-
-    &-body {
-      font-size: 28px;
-    }
-
     &-comment {
       max-width: 50%;
-      font-size: 20px;
     }
   }
 </style>

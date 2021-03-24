@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as postService from './posts';
 import * as userService from './users';
 import store from '../store';
-// import router from '../router';
+import router from '../router';
 import { createResponseErrorData } from './utils';
 
 const transport = axios.create({
@@ -23,6 +23,12 @@ transport.interceptors.response.use(
     const errorData = createResponseErrorData(error);
 
     store.dispatch('setUIError', errorData);
+
+    if (errorData.status === 404) {
+      router.push({ name: '404' });
+
+      return;
+    }
 
     return errorData;
   }

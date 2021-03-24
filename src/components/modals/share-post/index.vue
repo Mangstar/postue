@@ -1,17 +1,25 @@
 <template>
-  <el-dialog :visible.sync="value"
+  <el-dialog :visible.sync="show"
              width="30%"
-             title="Поделиться постом"
              class="modal-share"
              @close="close"
   >
+    <template v-slot:title>
+      <h3 style="font-size: 24px; text-align: center">
+        Поделиться постом
+      </h3>
+    </template>
+
     <section v-if="post" class="mb-15">
+      <div class="mb-5">
+        <strong style="font-size: 24px;">Пост: </strong>
+      </div>
       <el-input :value="post.title" disabled />
     </section>
 
     <section>
       <div class="mb-5">
-        <strong>Получатель: </strong>
+        <strong style="font-size: 24px;">Получатель: </strong>
       </div>
       <el-select v-model="userTo"
                  multiple
@@ -61,6 +69,7 @@ export default {
   data () {
     return {
       userTo: [],
+      show: false,
       isLoading: false
     };
   },
@@ -76,11 +85,17 @@ export default {
     }
   },
 
+  watch: {
+    value () {
+      this.show = this.value;
+    }
+  },
+
   methods: {
     async submit () {
       this.isLoading = true;
 
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve) => {
         setTimeout(resolve, 2000);
       });
 
