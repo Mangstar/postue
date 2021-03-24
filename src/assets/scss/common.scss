@@ -1,3 +1,11 @@
+@import '../css/normalize.css';
+@import "_parts/vars";
+
+body {
+  font-size: 18px;
+  line-height: 1.2;
+}
+
 .f-wrap {
   flex-wrap: wrap;
 }
@@ -21,4 +29,23 @@
 .error-text {
   padding: 0 20px;
   color: red;
+}
+
+.text-align-right {
+  text-align: right;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.base-link {
+  text-decoration: none;
+  color: $base-blue;
+
+  &:hover {
+    color: $base-blue-hover;
+    text-decoration: underline;
+  }
 }

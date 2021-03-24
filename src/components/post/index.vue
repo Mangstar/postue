@@ -1,7 +1,11 @@
 <template>
-  <el-card class="box-card">
+  <el-card class="post-item">
     <template v-slot:header>
-      {{ slicedTitle }}
+      <router-link :to="{ name: 'post-page', params: { id } }"
+                   class="base-link"
+      >
+        {{ slicedTitle }}
+      </router-link>
     </template>
 
     <div class="mb-15">
@@ -14,6 +18,13 @@
                  @click="$emit('delete-post', id)"
       >
         Удалить
+      </el-button>
+
+      <el-button type="primary"
+                 size="small"
+                 @click="$emit('show-preview', id)"
+      >
+        Превью
       </el-button>
 
       <el-button type="success"
@@ -55,3 +66,13 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+  @import "../../assets/scss/_parts/_vars";
+
+  .post-item {
+    &.is-active {
+      border: 3px solid $base-blue;
+    }
+  }
+</style>

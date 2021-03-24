@@ -6,6 +6,8 @@ import {
   Container,
   Row,
   Col,
+  Menu,
+  MenuItem,
   Card,
   Loading,
   Input,
@@ -22,6 +24,7 @@ import store from './store';
 // styles
 import 'element-ui/lib/theme-chalk/index.css';
 import './assets/scss/common.scss';
+import router from './router';
 
 Vue.use(Header);
 Vue.use(Main);
@@ -29,6 +32,8 @@ Vue.use(Footer);
 Vue.use(Container);
 Vue.use(Row);
 Vue.use(Col);
+Vue.use(Menu);
+Vue.use(MenuItem);
 Vue.use(Card);
 Vue.use(Loading);
 Vue.use(Input);
@@ -43,5 +48,6 @@ Vue.config.productionTip = false;
 
 new Vue({
   store,
+  router,
   render: h => h(App)
 }).$mount('#app');

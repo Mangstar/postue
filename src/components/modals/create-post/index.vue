@@ -9,14 +9,14 @@
       <div class="mb-5">
         <strong>Название: </strong>
       </div>
-      <el-input v-model="title" />
+      <el-input v-model="title" placeholder="Введите название" />
     </section>
 
     <section>
       <div class="mb-5">
         <strong>Содержание: </strong>
       </div>
-      <el-input v-model="body" type="textarea" />
+      <el-input v-model="body" type="textarea" placeholder="Введите содержимое" />
     </section>
 
     <template v-slot:footer>
@@ -72,6 +72,7 @@ export default {
     },
 
     close () {
+      console.log('close');
       this.title = '';
       this.body = '';
       this.$emit('input', false);
