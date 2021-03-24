@@ -1,5 +1,5 @@
 <template>
-  <div class="post-page">
+  <div v-cloak class="post-page">
     <div class="container">
       <h1 class="main-title">
         {{ post.title }}

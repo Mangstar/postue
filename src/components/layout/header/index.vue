@@ -57,20 +57,24 @@ export default {
     &-item {
       box-sizing: border-box;
       list-style: none;
-      border-bottom: 2px solid transparent;
+      border-bottom: 4px solid transparent;
 
-      &.is-active,
-      &:hover {
+      &.is-active, &:hover {
         border-bottom-color: $base-blue;
       }
+    }
+
+    &-item.is-active &-link,
+    &-item:hover &-link {
+      color: $base-blue;
     }
 
     &-link {
       display: block;
       height: 60px;
       box-sizing: border-box;
-      padding: 0 15px;
-      font-size: 18px;
+      padding: 0 25px;
+      font-size: 24px;
       line-height: 60px;
       text-decoration: none;
       color: $base-gray;

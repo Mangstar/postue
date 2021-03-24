@@ -140,8 +140,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "../../assets/scss/_parts/vars";
-
   .filter {
     &-reference {
       min-width: 300px;
