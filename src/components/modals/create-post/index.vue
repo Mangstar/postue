@@ -6,21 +6,21 @@
              @close="close"
   >
     <template v-slot:title>
-      <h3 style="font-size: 24px; text-align: center">
+      <h3 style="text-align: center">
         Создать пост
       </h3>
     </template>
 
     <section class="mb-15">
       <div class="mb-5">
-        <strong style="font-size: 24px;">Название: </strong>
+        <strong>Название: </strong>
       </div>
       <el-input v-model="title" placeholder="Введите название" />
     </section>
 
     <section>
       <div class="mb-5">
-        <strong style="font-size: 24px;">Содержание: </strong>
+        <strong>Содержание: </strong>
       </div>
       <el-input v-model="body" type="textarea" placeholder="Введите содержимое" />
     </section>

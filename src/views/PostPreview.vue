@@ -1,5 +1,5 @@
 <template>
-  <div class="post-preview-page">
+  <div v-show="!previewLoading" class="post-preview-page">
     <h2 class="main-subtitle">
       {{ post.title }}
     </h2>
@@ -17,27 +17,20 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 export default {
   name: 'post-preview',
 
   props: {
     id: {
-      type: [Number, String]
+      type: Number
     }
   },
 
   data () {
     return {
-      post: {}
+      post: {},
+      previewLoading: true
     };
-  },
-
-  computed: {
-    ...mapState([
-      'posts'
-    ])
   },
 
   watch: {
@@ -52,7 +45,11 @@ export default {
 
   methods: {
     async loadPost () {
+      this.previewLoading = true;
+
       this.post = await this.$store.dispatch('fetchPreview', this.id);
+
+      this.previewLoading = false;
     }
   }
 };

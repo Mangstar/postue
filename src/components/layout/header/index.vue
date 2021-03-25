@@ -55,7 +55,7 @@ export default {
     &-item {
       box-sizing: border-box;
       list-style: none;
-      border-bottom: 4px solid transparent;
+      border-bottom: 2px solid transparent;
 
       &.is-active, &:hover {
         border-bottom-color: $base-blue;
@@ -72,7 +72,6 @@ export default {
       height: 60px;
       box-sizing: border-box;
       padding: 0 25px;
-      font-size: 24px;
       line-height: 60px;
       text-decoration: none;
       color: $base-gray;

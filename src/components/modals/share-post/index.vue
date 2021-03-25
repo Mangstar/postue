@@ -5,28 +5,28 @@
              @close="close"
   >
     <template v-slot:title>
-      <h3 style="font-size: 24px; text-align: center">
+      <h3 style="text-align: center">
         Поделиться постом
       </h3>
     </template>
 
     <section v-if="post" class="mb-15">
       <div class="mb-5">
-        <strong style="font-size: 24px;">Пост: </strong>
+        <strong>Пост: </strong>
       </div>
       <el-input :value="post.title" disabled />
     </section>
 
     <section>
       <div class="mb-5">
-        <strong style="font-size: 24px;">Получатель: </strong>
+        <strong>Получатель: </strong>
       </div>
       <el-select v-model="userTo"
                  multiple
                  placeholder="Поделиться с"
                  class="w-100"
       >
-        <el-option v-for="user in options"
+        <el-option v-for="user in userOptions"
                    :key="user.value"
                    :label="user.label"
                    :value="user.value"
@@ -80,7 +80,7 @@ export default {
       selectOptions: 'users/selectOptions'
     }),
 
-    options () {
+    userOptions () {
       return this.selectOptions.filter(user => user.value !== this.currentUserId);
     }
   },
@@ -95,9 +95,7 @@ export default {
     async submit () {
       this.isLoading = true;
 
-      await new Promise((resolve) => {
-        setTimeout(resolve, 2000);
-      });
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       this.isLoading = false;
 
@@ -112,7 +110,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .modal-share {
     text-align: left;
   }

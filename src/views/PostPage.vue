@@ -14,18 +14,23 @@
           Список комментариев
         </h2>
 
-        <el-card v-for="comment in post.comments"
-                 :key="comment.id"
-                 class="post-comment mb-20"
-        >
-          <template v-slot:header>
-            <h3>{{ comment.name }} ( email: {{ comment.email }} )</h3>
-          </template>
+        <el-row type="flex" :gutter="20" class="f-wrap">
+          <el-col v-for="comment in post.comments"
+                  :key="comment.id"
+                  :span="12"
+                  class="mb-20"
+          >
+            <el-card class="post-comment">
+              <template v-slot:header>
+                <h3>{{ comment.name }} ( email: {{ comment.email }} )</h3>
+              </template>
 
-          <div class="comment-body base-text">
-            {{ comment.body }}
-          </div>
-        </el-card>
+              <div class="comment-body base-text">
+                {{ comment.body }}
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
       </div>
     </div>
   </div>
@@ -37,7 +42,7 @@ export default {
 
   props: {
     id: {
-      type: [Number, String]
+      type: Number
     }
   },
 
@@ -68,11 +73,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-  .post {
-    &-comment {
-      max-width: 50%;
-    }
-  }
-</style>

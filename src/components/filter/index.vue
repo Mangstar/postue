@@ -106,30 +106,27 @@ export default {
 
   methods: {
     submit () {
-      const { commit } = this.$store;
-
       this.isVisible = false;
+
       this.filters.forEach(filter => {
-        commit(filter.commit, filter.value);
+        this.$store.commit(filter.commit, filter.value);
       });
     },
 
     clear () {
-      const { commit } = this.$store;
-
       this.isVisible = false;
+
       this.filters.forEach(filter => {
         filter.value = filter.type === 'text' ? '' : [];
-        commit(filter.commit, filter.value);
+        this.$store.commit(filter.commit, filter.value);
       });
     },
 
     deleteSelectedFilter (tagId) {
-      const { commit } = this.$store;
       const filterToDelete = this.filters.find(filter => filter.key === tagId);
 
       filterToDelete.value = filterToDelete.type === 'text' ? '' : [];
-      commit(filterToDelete.commit, filterToDelete.value);
+      this.$store.commit(filterToDelete.commit, filterToDelete.value);
     },
 
     getModel (key) {
@@ -164,10 +161,6 @@ export default {
     &-placeholder {
       font-size: 16px;
       color: $base-gray;
-    }
-
-    &-name {
-      font-size: 24px;
     }
 
     &-actions {

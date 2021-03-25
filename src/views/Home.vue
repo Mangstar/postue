@@ -115,7 +115,9 @@ export default {
 
     deletePost (id) {
       this.$store.dispatch('deletePost', id);
+
       this.postPreviewId = null;
+
       this.$router.push({
         name: 'home'
       });
@@ -127,6 +129,7 @@ export default {
       }
 
       this.postPreviewId = id;
+
       this.$router.push({
         name: 'post-preview',
         params: { id }
@@ -135,6 +138,7 @@ export default {
 
     sharePost (id) {
       this.postToShare = this.visiblePosts.find(post => post.id === id);
+
       this.open.sharePostModal = true;
     }
   }
@@ -144,12 +148,12 @@ export default {
 <style lang="scss" scoped>
   .show-enter-active {
     animation: flipInX .8s ease;
-    backface-visibility: visible !important;
+    backface-visibility: visible;
   }
 
   .show-leave-active {
     animation: flipOutX .8s ease;
-    backface-visibility: visible !important;
+    backface-visibility: visible;
   }
 
   @keyframes flipInX {
