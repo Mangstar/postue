@@ -12,12 +12,15 @@ export const createResponseErrorData = (error) => {
   } else if (error.request) {
     const { status } = error.request;
     const { config } = error.toJSON();
+    const message = !window.navigator.onLine
+      ? 'Отсутствует подключение к сети'
+      : 'Ошибка сети. Повторите попытку';
 
     errorData = {
       status,
       success: false,
       url: config.baseURL + config.url,
-      message: 'Ошибка сети. Повторите попытку.'
+      message
     };
   } else {
     errorData = {
