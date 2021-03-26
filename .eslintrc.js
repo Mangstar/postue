@@ -25,7 +25,6 @@ module.exports = {
     'no-import-assign': 'error',
     'accessor-pairs': 'off',
     'default-case': 'warn',
-    'default-case-last': 'warn',
     'default-param-last': 'error',
     'grouped-accessor-pairs': 'warn',
     'guard-for-in': 'error',
