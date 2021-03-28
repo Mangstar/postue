@@ -18,6 +18,8 @@ import {
   Tag,
   Button
 } from 'element-ui';
+import lang from 'element-ui/lib/locale/lang/ru-RU';
+import locale from 'element-ui/lib/locale';
 import App from './App.vue';
 import store from './store';
 
@@ -25,6 +27,8 @@ import store from './store';
 import 'element-ui/lib/theme-chalk/index.css';
 import './assets/scss/common.scss';
 import router from './router';
+
+locale.use(lang);
 
 Vue.use(Header);
 Vue.use(Main);

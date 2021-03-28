@@ -32,29 +32,68 @@
           </el-col>
         </el-row>
       </div>
+
+      <div class="post-review">
+        <h2 class="main-subtitle mb-20">
+          Связь с автором поста
+        </h2>
+
+        <el-input v-model="review.text"
+                  type="textarea"
+                  :row="3"
+                  placeholder="Напишите автору поста"
+                  class="mb-20"
+        />
+
+        <el-button type="primary" @click="sendReview">
+          Отправить
+        </el-button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { MessageBox } from 'element-ui';
+
 export default {
   name: 'post-page',
 
   props: {
     id: {
-      type: Number
+      type: [Number, String]
     }
   },
 
   data () {
     return {
-      post: {}
+      post: {},
+      review: {
+        text: '',
+        modified: false
+      }
     };
   },
 
+  async beforeRouteLeave (to, from, next) {
+    if (!this.review.modified) {
+      next(); return;
+    }
+
+    try {
+      await MessageBox.confirm(
+        'У вас есть не сохраненные изменения. Вы уверены, что хотите покинуть страницу?'
+      );
+
+      next();
+    } catch (err) {
+      next(false);
+    }
+  },
+
   watch: {
-    $route () {
-      this.loadPage();
+    'review.text' () {
+      this.review.modified = true;
     }
   },
 
@@ -69,6 +108,10 @@ export default {
       this.post = await this.$store.dispatch('fetchOne', this.id);
 
       this.$store.commit('finishLoading');
+    },
+
+    sendReview () {
+      this.review.modified = false;
     }
   }
 };

@@ -22,7 +22,7 @@ export default {
 
   props: {
     id: {
-      type: Number
+      type: [Number, String]
     }
   },
 
@@ -31,12 +31,6 @@ export default {
       post: {},
       previewLoading: true
     };
-  },
-
-  watch: {
-    $route () {
-      this.loadPost();
-    }
   },
 
   async created () {
