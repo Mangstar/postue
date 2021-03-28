@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
-import PostPage from '../views/PostPage';
 import PostPreview from '../views/PostPreview';
 import ClientErrorPage from '../views/404';
 import store from '../store/';
@@ -33,7 +32,7 @@ const routes = [
     path: '/posts/:id',
     name: 'post-page',
     props: true,
-    component: PostPage,
+    component: () => import(/* webpackChunkName: "post-page" */ '../views/PostPage'),
     meta: {
       requiresAuth: true
     }
