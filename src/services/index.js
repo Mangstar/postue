@@ -26,8 +26,6 @@ transport.interceptors.response.use(
 
     if (errorData.status === 404) {
       router.push({ name: '404' });
-
-      return;
     }
 
     return errorData;

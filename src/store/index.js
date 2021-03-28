@@ -13,6 +13,7 @@ export default new Vuex.Store({
     isLoading: false,
 
     currentUser: {},
+    token: 'atxldjfkjfl67dsmn3dsf43k43279fdjf6ghnfuid732jkfodp23kjflsd_f3',
 
     posts: [],
 
