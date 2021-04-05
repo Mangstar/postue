@@ -1,19 +1,23 @@
 module.exports = {
   root: true,
+
   env: {
     browser: true,
     node: true,
     es6: true
   },
+
   extends: [
     '@vue/standard',
     'plugin:vue/recommended'
   ],
+
   parserOptions: {
     parser: 'babel-eslint'
   },
+
   rules: {
-    'semi': ['error', 'always'],
+    semi: ['error', 'always'],
     'linebreak-style': ['error', 'unix'],
     'eol-last': ['off'],
     'no-trailing-spaces': 'off',
@@ -34,9 +38,9 @@ module.exports = {
     'no-invalid-this': 'warn',
     'no-magic-numbers': 'warn',
     'no-useless-concat': 'warn',
-    'radix': 'error',
+    radix: 'error',
     'require-await': 'warn',
-    "camelcase": ["error", { "properties": "always" }],
+    camelcase: ['error', { properties: 'always' }],
     'function-call-argument-newline': ['error', 'consistent'],
     'function-paren-newline': ['error', 'consistent'],
     'implicit-arrow-linebreak': ['error', 'beside'],
@@ -89,5 +93,17 @@ module.exports = {
     ],
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
-  }
+  },
+
+  overrides: [
+    {
+      files: [
+        '**/__tests__/*.{j,t}s?(x)',
+        '**/tests/unit/**/*.spec.{j,t}s?(x)'
+      ],
+      env: {
+        jest: true
+      }
+    }
+  ]
 };
