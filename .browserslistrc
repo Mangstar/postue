@@ -1,3 +1,14 @@
-> 1%
+[modern]
 last 2 versions
-not dead
+last 1 year
+not safari 12.1
+
+[esm]
+edge >= 16
+firefox >= 60
+chrome >= 61
+safari >= 11
+opera >= 48
+
+[legacy]
+defaults

@@ -41,7 +41,7 @@ module.exports = {
     'function-paren-newline': ['error', 'consistent'],
     'implicit-arrow-linebreak': ['error', 'beside'],
     'line-comment-position': ['error', 'above'],
-    'multiline-comment-style': ['error'],
+    'multiline-comment-style': ['error', 'separate-lines'],
     'newline-per-chained-call': ['warn', { ignoreChainWithDepth: 2 }],
     'no-underscore-dangle': 'error',
 
