@@ -8,6 +8,44 @@ import * as userService from '../services/users';
 
 Vue.use(Vuex);
 
+export const mutations = {
+  startLoading (state) {
+    state.isLoading = true;
+  },
+
+  finishLoading (state) {
+    state.isLoading = false;
+  },
+
+  setCurrentUser (state, payload) {
+    state.currentUser = payload;
+  },
+
+  setPosts (state, payload) {
+    state.posts = payload;
+  },
+
+  addPost (state, payload) {
+    state.posts.unshift(payload);
+  },
+
+  deletePost (state, payload) {
+    state.posts = state.posts.filter(post => post.id !== payload);
+  },
+
+  setFilterName (state, payload) {
+    state.filter.name = payload;
+  },
+
+  setFilterUsers (state, payload) {
+    state.filter.users = payload;
+  },
+
+  setUIError (state, payload) {
+    state.ui.error = payload;
+  }
+};
+
 export default new Vuex.Store({
   state: {
     isLoading: false,
@@ -50,43 +88,7 @@ export default new Vuex.Store({
     }
   },
 
-  mutations: {
-    startLoading (state) {
-      state.isLoading = true;
-    },
-
-    finishLoading (state) {
-      state.isLoading = false;
-    },
-
-    setCurrentUser (state, payload) {
-      state.currentUser = payload;
-    },
-
-    setPosts (state, payload) {
-      state.posts = payload;
-    },
-
-    addPost (state, payload) {
-      state.posts.unshift(payload);
-    },
-
-    deletePost (state, payload) {
-      state.posts = state.posts.filter(post => post.id !== payload);
-    },
-
-    setFilterName (state, payload) {
-      state.filter.name = payload;
-    },
-
-    setFilterUsers (state, payload) {
-      state.filter.users = payload;
-    },
-
-    setUIError (state, payload) {
-      state.ui.error = payload;
-    }
-  },
+  mutations,
 
   actions: {
     async fetchCurrentUser (context) {

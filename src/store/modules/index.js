@@ -1,3 +1,1 @@
-import userModule from './users';
-
-export const users = userModule;
+export { default as users } from './users';
