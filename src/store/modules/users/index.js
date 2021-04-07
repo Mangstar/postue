@@ -29,6 +29,8 @@ export const actions = {
   }
 };
 
+export const config = { state, getters, mutations, actions };
+
 export default {
   namespaced: true,
   state,
