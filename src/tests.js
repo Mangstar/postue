@@ -14,3 +14,16 @@ export const sum = (a, b) => {
 
   return a + b;
 };
+
+export default {
+  sum,
+  multiply (a, b) {
+    return a * b;
+  },
+  calc: class Calc {
+    constructor (numbers) {
+      this.numbers = numbers;
+    }
+  },
+  result: 100
+};

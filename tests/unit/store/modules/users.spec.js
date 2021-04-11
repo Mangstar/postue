@@ -2,32 +2,10 @@ import { createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 import _ from 'lodash';
 import { state, getters, mutations, actions } from '@/store/modules/users';
+import { getUsers } from 'faker';
+import * as userService from '@/services/users';
 
-function getUsers () {
-  return [
-    { id: 1, name: 'user1', age: 24 },
-    { id: 2, name: 'user2', age: 29 }
-  ];
-}
-
-jest.mock('@/services/users', () => {
-  const data = [
-    { id: 1, name: 'user1', age: 24 },
-    { id: 2, name: 'user2', age: 29 }
-  ];
-
-  return {
-    fetchAll: jest
-      .fn()
-      .mockResolvedValueOnce({
-        success: false
-      })
-      .mockResolvedValueOnce({
-        success: true,
-        data
-      })
-  };
-});
+jest.mock('@/services/users');
 
 describe('Store module "Users"', () => {
   const localVue = createLocalVue();
@@ -58,8 +36,11 @@ describe('Store module "Users"', () => {
     it('selectOptions', () => {
       const users = getUsers();
       const expectedOptions = [
-        { value: 1, label: 'user1' },
-        { value: 2, label: 'user2' }
+        { value: 1, label: 'Leanne Graham' },
+        { value: 2, label: 'Ervin Howell' },
+        { value: 3, label: 'Clementine Bauch' },
+        { value: 4, label: 'Patricia Lebsack' },
+        { value: 5, label: 'Chelsey Dietrich' }
       ];
       store.commit('setUsers', users);
 
@@ -77,14 +58,22 @@ describe('Store module "Users"', () => {
   });
 
   describe('Actions', () => {
-    it('fetchUsers calls mutation "setUsers" only the API Request is completed successfully', async () => {
-      const { setUsers } = mutations;
+    describe('fetchUsers', () => {
+      it('User list doesn\'t fetch', async () => {
+        userService.fetchAll.mockResolvedValueOnce({ success: false });
 
-      await store.dispatch('fetchUsers');
-      expect(setUsers).not.toHaveBeenCalled();
+        await store.dispatch('fetchUsers');
 
-      await store.dispatch('fetchUsers');
-      expect(setUsers).toHaveBeenCalled();
+        expect(userService.fetchAll).toHaveBeenCalled();
+        expect(mutations.setUsers).not.toHaveBeenCalled();
+      });
+
+      it('User list fetched successfully', async () => {
+        await store.dispatch('fetchUsers');
+
+        expect(userService.fetchAll).toHaveBeenCalled();
+        expect(mutations.setUsers).toHaveBeenCalled();
+      });
     });
   });
 });
