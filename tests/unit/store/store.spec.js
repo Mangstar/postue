@@ -14,7 +14,13 @@ describe('Root store module', () => {
   });
 
   describe('Getters', () => {
-    it('currentUserId', () => {
+    const names = {
+      currentUserId: '"currentUserId" should return id of the current user',
+      selectOptions: '"selectOptions" should return an array of objects of structure: { value, label }',
+      visiblePosts: '"visiblePosts" should return a list of visible posts which matches with filter.name & filter.users'
+    };
+
+    it(names.currentUserId, () => {
       const { currentUserId } = getters;
       const { setCurrentUser } = mutations;
       const currentUser = getCurrentUser();
@@ -24,7 +30,7 @@ describe('Root store module', () => {
       expect(currentUserId(state)).toBe(1);
     });
 
-    it('selectOptions', () => {
+    it(names.selectOptions, () => {
       const { selectOptions } = getters;
       const { setPosts } = mutations;
       const posts = getPosts();
@@ -38,7 +44,7 @@ describe('Root store module', () => {
       expect(selectOptions(state)).toEqual(expectedOptions);
     });
 
-    describe('visiblePosts', () => {
+    describe(names.visiblePosts, () => {
       const { visiblePosts } = getters;
       const { setPosts } = mutations;
       const posts = getPosts(21);
@@ -107,7 +113,18 @@ describe('Root store module', () => {
   });
 
   describe('Mutations', () => {
-    it('startLoading', () => {
+    const names = {
+      startLoading: '"startLoading" should toggle state.isLoading in <true>',
+      finishLoading: '"finishLoading" should toggle state.isLoading in <false>',
+      setCurrentUser: '"setCurrentUser" should set user data object as a state.currentUser',
+      setPosts: '"setPosts" should set state.posts as an array of objects',
+      addPost: '"addPost" should add a new post data object into the 1st position at state.posts',
+      deletePost: '"deletePost" should remove a post by id',
+      setFilterName: '"setFilterName" should set a filter.name value',
+      setFilterUsers: '"setFilterUsers" should set a filter.users as an array of user\'s id'
+    };
+
+    it(names.startLoading, () => {
       const { startLoading } = mutations;
 
       startLoading(state);
@@ -115,7 +132,7 @@ describe('Root store module', () => {
       expect(state.isLoading).toBe(true);
     });
 
-    it('finishLoading', () => {
+    it(names.finishLoading, () => {
       const { finishLoading } = mutations;
 
       finishLoading(state);
@@ -123,7 +140,7 @@ describe('Root store module', () => {
       expect(state.isLoading).toBe(false);
     });
 
-    it('setCurrentUser', () => {
+    it(names.setCurrentUser, () => {
       const { setCurrentUser } = mutations;
       const currentUser = getCurrentUser();
 
@@ -132,7 +149,7 @@ describe('Root store module', () => {
       expect(state.currentUser).toEqual(currentUser);
     });
 
-    it('setPosts', () => {
+    it(names.setPosts, () => {
       const { setPosts } = mutations;
       const posts = getPosts();
 
@@ -141,7 +158,7 @@ describe('Root store module', () => {
       expect(state.posts).toEqual(posts);
     });
 
-    it('addPost', () => {
+    it(names.addPost, () => {
       const { addPost } = mutations;
 
       for (let i = 1; i < 4; i++) {
@@ -152,7 +169,7 @@ describe('Root store module', () => {
       }
     });
 
-    it('deletePost', () => {
+    it(names.deletePost, () => {
       const { setPosts, deletePost } = mutations;
       const posts = getPosts(20);
       const postIdToDelete = 2;
@@ -165,7 +182,7 @@ describe('Root store module', () => {
       expect(state.posts.find(post => post.id === postIdToDelete)).toBeUndefined();
     });
 
-    it('setFilterName', () => {
+    it(names.setFilterName, () => {
       const { setFilterName } = mutations;
       const title = 'some string';
 
@@ -173,7 +190,7 @@ describe('Root store module', () => {
       expect(state.filter.name).toBe('some string');
     });
 
-    it('setFilterUsers', () => {
+    it(names.setFilterUsers, () => {
       const { setFilterUsers } = mutations;
       const users = [1, 2];
 

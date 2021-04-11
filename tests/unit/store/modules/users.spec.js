@@ -1,9 +1,9 @@
 import { createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
-import _ from 'lodash';
 import { state, getters, mutations, actions } from '@/store/modules/users';
-import { getUsers } from 'faker';
 import * as userService from '@/services/users';
+import { cloneDeep } from 'lodash-es';
+import { getUsers } from 'faker';
 
 jest.mock('@/services/users');
 
@@ -21,7 +21,7 @@ describe('Store module "Users"', () => {
     });
 
     store = new Vuex.Store({
-      state: _.cloneDeep(state),
+      state: cloneDeep(state),
       getters,
       mutations,
       actions
