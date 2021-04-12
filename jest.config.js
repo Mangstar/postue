@@ -70,12 +70,13 @@ module.exports = {
   moduleNameMapper: {
     vue$: '<rootDir>/node_modules/vue/dist/vue.js',
     faker: '<rootDir>/faker',
-    '^lodash-es$': 'lodash'
+    '^lodash-es$': 'lodash',
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
   },
 
   transformIgnorePatterns: [
-    '/node_modules/',
-    '<rootDir>/node_modules/(?!lodash-es)'
+    '/node_modules/'
+    // '<rootDir>/node_modules/(?!lodash-es)'
   ]
 
   // An array of file extensions your modules use

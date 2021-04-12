@@ -7,7 +7,7 @@ import store from '../store/';
 
 Vue.use(VueRouter);
 
-const routes = [
+export const routes = [
   {
     path: '/',
     name: 'home',
