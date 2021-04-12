@@ -32,8 +32,12 @@ describe('Store module "Users"', () => {
     jest.clearAllMocks();
   });
 
-  describe('Getters', () => {
-    it('selectOptions', () => {
+  describe('GETTERS', () => {
+    const messages = {
+      selectOptions: 'should return an array of objects: { value, label }[]'
+    };
+
+    it(messages.selectOptions, () => {
       const users = getUsers();
       const expectedOptions = [
         { value: 1, label: 'Leanne Graham' },
@@ -48,8 +52,12 @@ describe('Store module "Users"', () => {
     });
   });
 
-  describe('Mutations', () => {
-    it('setUsers', () => {
+  describe('MUTATIONS', () => {
+    const messages = {
+      setUsers: 'should set array of user data objects in state.list'
+    };
+
+    it(messages.setUsers, () => {
       const users = getUsers();
       store.commit('setUsers', users);
 
@@ -59,7 +67,15 @@ describe('Store module "Users"', () => {
 
   describe('Actions', () => {
     describe('fetchUsers', () => {
-      it('User list doesn\'t fetch', async () => {
+      const commitName = 'setUsers';
+      const serviceName = 'userService.fetchAll';
+      const expectedUserList = getUsers();
+      const messages = {
+        success: 'should invoke commit "' + commitName + '" with "' + expectedUserList + '" when "' + serviceName + '" request is successful',
+        error: 'shouldn\'t invoke commit "' + commitName + '" when "' + serviceName + '" request is failed'
+      };
+
+      it(messages.error, async () => {
         userService.fetchAll.mockResolvedValueOnce({ success: false });
 
         await store.dispatch('fetchUsers');
@@ -68,7 +84,7 @@ describe('Store module "Users"', () => {
         expect(mutations.setUsers).not.toHaveBeenCalled();
       });
 
-      it('User list fetched successfully', async () => {
+      it(messages.success, async () => {
         await store.dispatch('fetchUsers');
 
         expect(userService.fetchAll).toHaveBeenCalled();

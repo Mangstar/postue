@@ -1,4 +1,4 @@
-import { getUsers, getCurrentUser } from '../../../faker';
+import { getUsers, getCurrentUser } from 'faker';
 
 export const fetchCurrent = jest
   .fn(() => ({

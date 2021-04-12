@@ -34,7 +34,7 @@ export const createPost = jest
   .fn(data => ({
     success: true,
     data: Object.assign({
-      id: 100
+      id: 101
     }, data)
   }))
   .mockName('createPost');

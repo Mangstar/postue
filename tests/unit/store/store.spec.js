@@ -13,38 +13,42 @@ describe('Root store module', () => {
     state = cloneDeep(initialState);
   });
 
-  describe('Getters', () => {
-    const names = {
-      currentUserId: '"currentUserId" should return id of the current user',
-      selectOptions: '"selectOptions" should return an array of objects of structure: { value, label }',
-      visiblePosts: '"visiblePosts" should return a list of visible posts which matches with filter.name & filter.users'
+  describe('GETTERS', () => {
+    const messages = {
+      currentUserId: 'should return id of the current user',
+      selectOptions: 'should return an array of objects: { value, label }[]',
+      visiblePosts: 'should return a list of visible posts which matches with filter.name & filter.users'
     };
 
-    it(names.currentUserId, () => {
+    it(messages.currentUserId, () => {
       const { currentUserId } = getters;
       const { setCurrentUser } = mutations;
       const currentUser = getCurrentUser();
+      const expectedID = 1;
 
       setCurrentUser(state, currentUser);
 
-      expect(currentUserId(state)).toBe(1);
+      expect(currentUserId(state)).toBe(expectedID);
     });
 
-    it(names.selectOptions, () => {
+    it(messages.selectOptions, () => {
       const { selectOptions } = getters;
       const { setPosts } = mutations;
-      const posts = getPosts();
-      const expectedOptions = posts.map(post => ({
-        value: post.id,
-        label: post.title
-      }));
+      const posts = getPosts(5);
+      const expectedOptions = [
+        { value: 1, label: 'Post 1' },
+        { value: 2, label: 'Post 2' },
+        { value: 3, label: 'Post 3' },
+        { value: 4, label: 'Post 4' },
+        { value: 5, label: 'Post 5' }
+      ];
 
       setPosts(state, posts);
 
       expect(selectOptions(state)).toEqual(expectedOptions);
     });
 
-    describe(names.visiblePosts, () => {
+    describe(messages.visiblePosts, () => {
       const { visiblePosts } = getters;
       const { setPosts } = mutations;
       const posts = getPosts(21);
@@ -112,19 +116,19 @@ describe('Root store module', () => {
     });
   });
 
-  describe('Mutations', () => {
-    const names = {
-      startLoading: '"startLoading" should toggle state.isLoading in <true>',
-      finishLoading: '"finishLoading" should toggle state.isLoading in <false>',
-      setCurrentUser: '"setCurrentUser" should set user data object as a state.currentUser',
-      setPosts: '"setPosts" should set state.posts as an array of objects',
-      addPost: '"addPost" should add a new post data object into the 1st position at state.posts',
-      deletePost: '"deletePost" should remove a post by id',
-      setFilterName: '"setFilterName" should set a filter.name value',
-      setFilterUsers: '"setFilterUsers" should set a filter.users as an array of user\'s id'
+  describe('MUTATIONS', () => {
+    const messages = {
+      startLoading: 'should toggle state.isLoading in true',
+      finishLoading: 'should toggle state.isLoading in false',
+      setCurrentUser: 'should set user data object in state.currentUser',
+      setPosts: 'should set array of post data objects in state.posts',
+      addPost: 'should add a new post into the 1st position at state.posts',
+      deletePost: 'should remove a post by id',
+      setFilterName: 'should set a filter.name as a string',
+      setFilterUsers: 'should set a filter.users as an array of user\'s id'
     };
 
-    it(names.startLoading, () => {
+    it(messages.startLoading, () => {
       const { startLoading } = mutations;
 
       startLoading(state);
@@ -132,7 +136,7 @@ describe('Root store module', () => {
       expect(state.isLoading).toBe(true);
     });
 
-    it(names.finishLoading, () => {
+    it(messages.finishLoading, () => {
       const { finishLoading } = mutations;
 
       finishLoading(state);
@@ -140,7 +144,7 @@ describe('Root store module', () => {
       expect(state.isLoading).toBe(false);
     });
 
-    it(names.setCurrentUser, () => {
+    it(messages.setCurrentUser, () => {
       const { setCurrentUser } = mutations;
       const currentUser = getCurrentUser();
 
@@ -149,7 +153,7 @@ describe('Root store module', () => {
       expect(state.currentUser).toEqual(currentUser);
     });
 
-    it(names.setPosts, () => {
+    it(messages.setPosts, () => {
       const { setPosts } = mutations;
       const posts = getPosts();
 
@@ -158,8 +162,10 @@ describe('Root store module', () => {
       expect(state.posts).toEqual(posts);
     });
 
-    it(names.addPost, () => {
+    it(messages.addPost, () => {
       const { addPost } = mutations;
+
+      expect(state.posts).toHaveLength(0);
 
       for (let i = 1; i < 4; i++) {
         const createdPost = createPost(i);
@@ -167,9 +173,11 @@ describe('Root store module', () => {
         addPost(state, createdPost);
         expect(state.posts[0]).toEqual(createdPost);
       }
+
+      expect(state.posts).toHaveLength(3);
     });
 
-    it(names.deletePost, () => {
+    it(messages.deletePost, () => {
       const { setPosts, deletePost } = mutations;
       const posts = getPosts(20);
       const postIdToDelete = 2;
@@ -182,7 +190,7 @@ describe('Root store module', () => {
       expect(state.posts.find(post => post.id === postIdToDelete)).toBeUndefined();
     });
 
-    it(names.setFilterName, () => {
+    it(messages.setFilterName, () => {
       const { setFilterName } = mutations;
       const title = 'some string';
 
@@ -190,7 +198,7 @@ describe('Root store module', () => {
       expect(state.filter.name).toBe('some string');
     });
 
-    it(names.setFilterUsers, () => {
+    it(messages.setFilterUsers, () => {
       const { setFilterUsers } = mutations;
       const users = [1, 2];
 
@@ -199,7 +207,7 @@ describe('Root store module', () => {
     });
   });
 
-  describe('Actions', () => {
+  describe('ACTIONS', () => {
     const commit = jest.fn().mockName('commit');
 
     afterEach(() => {
@@ -209,9 +217,14 @@ describe('Root store module', () => {
     describe('fetchCurrentUser', () => {
       const { fetchCurrentUser } = actions;
       const commitName = 'setCurrentUser';
+      const serviceName = 'userService.fetchCurrent';
       const currentUser = getCurrentUser();
+      const messages = {
+        success: 'should invoke commit "' + commitName + '" with "' + currentUser + '" when "' + serviceName + '" request is successful',
+        error: 'shouldn\'t invoke commit "' + commitName + '" when "' + serviceName + '" request is failed'
+      };
 
-      it('Current user data doesn\'t fetch', async () => {
+      it(messages.error, async () => {
         userService.fetchCurrent.mockResolvedValueOnce({ success: false });
 
         await fetchCurrentUser({ state, commit });
@@ -220,7 +233,7 @@ describe('Root store module', () => {
         expect(commit).not.toHaveBeenCalled();
       });
 
-      it('Current user data fetched successfully', async () => {
+      it(messages.success, async () => {
         await fetchCurrentUser({ state, commit });
 
         expect(userService.fetchCurrent).toHaveBeenCalled();
@@ -231,9 +244,14 @@ describe('Root store module', () => {
     describe('fetchAll', () => {
       const { fetchAll } = actions;
       const commitName = 'setPosts';
+      const serviceName = 'postService.fetchAll';
       const posts = getPosts(50);
+      const messages = {
+        success: 'should invoke commit "' + commitName + '" with "' + posts + '" when "' + serviceName + '" request is successful',
+        error: 'shouldn\'t invoke commit "' + commitName + '" when "' + serviceName + '" request is failed'
+      };
 
-      it('Posts data doesn\'t fetch', async () => {
+      it(messages.error, async () => {
         postService.fetchAll.mockResolvedValueOnce({ success: false });
 
         await fetchAll({ commit });
@@ -242,43 +260,52 @@ describe('Root store module', () => {
         expect(commit).not.toHaveBeenCalled();
       });
 
-      it('Posts data fetched successfully', async () => {
+      it(messages.success, async () => {
         await fetchAll({ commit });
 
-        expect(commit).toHaveBeenCalledWith(commitName, posts);
         expect(postService.fetchAll).toHaveBeenCalled();
+        expect(commit).toHaveBeenCalledWith(commitName, posts);
       });
     });
 
     describe('fetchOne', () => {
       const { fetchOne } = actions;
       const postID = 14;
+      const postServiceName = 'postService.fetchOne';
+      const commentsServiceName = 'postService.fetchPostComments';
+      const servicesNames = [postServiceName, commentsServiceName].join(', ');
       const expectedPost = {
         ...createPost(postID),
         comments: getPostComments(10, postID)
       };
+      const messages = {
+        successBothFetch: 'should return "' + expectedPost + '" when ' + servicesNames + ' requests are successful',
+        errorFetchOne: 'should return null when "' + postServiceName + '" request is failed',
+        errorBothFetch: 'should return null when "' + servicesNames + '" requests are failed',
+        errorFetchComments: 'should return null when "' + commentsServiceName + '" request is failed'
+      };
 
-      it('Post data doesn\'t fetch', async () => {
+      it(messages.errorFetchOne, async () => {
         postService.fetchOne.mockResolvedValueOnce({ success: false });
 
-        const responseErrorOne = await fetchOne(null, postID);
+        const responseError = await fetchOne(null, postID);
 
         expect(postService.fetchOne).toHaveBeenCalledWith(postID);
         expect(postService.fetchPostComments).toHaveBeenCalledWith(postID);
-        expect(responseErrorOne).toBeNull();
+        expect(responseError).toBeNull();
       });
 
-      it('Post comments doesn\'t fetch', async () => {
+      it(messages.errorFetchComments, async () => {
         postService.fetchPostComments.mockResolvedValueOnce({ success: false });
 
-        const responseErrorTwo = await fetchOne(null, postID);
+        const responseError = await fetchOne(null, postID);
 
         expect(postService.fetchOne).toHaveBeenCalledWith(postID);
         expect(postService.fetchPostComments).toHaveBeenCalledWith(postID);
-        expect(responseErrorTwo).toBeNull();
+        expect(responseError).toBeNull();
       });
 
-      it('Post data and posts comments doesn\'t fetch', async () => {
+      it(messages.errorBothFetch, async () => {
         postService.fetchOne.mockResolvedValueOnce({ success: false });
         postService.fetchPostComments.mockResolvedValueOnce({ success: false });
 
@@ -289,51 +316,62 @@ describe('Root store module', () => {
         expect(responseErrorThree).toBeNull();
       });
 
-      it('Post data and comments fetched successfully', async () => {
+      it(messages.successBothFetch, async () => {
         const responseSuccess = await fetchOne(null, postID);
 
         expect(postService.fetchOne).toHaveBeenCalledWith(postID);
+        expect(postService.fetchPostComments).toHaveBeenCalledWith(postID);
         expect(responseSuccess).toEqual(expectedPost);
       });
     });
 
     describe('fetchPreview', () => {
       const { fetchPreview } = actions;
-      const postID = 1;
+      const previewPostID = 1;
       const expectedPost = createPost();
+      const serviceName = 'postService.fetchPreview';
+      const messages = {
+        success: 'should return "' + expectedPost + '" when "' + serviceName + '" request is successful',
+        error: 'should return null when "' + serviceName + '" request is failed'
+      };
 
-      it('Post preview data doesn\'t fetch', async () => {
+      it(messages.error, async () => {
         postService.fetchPreview.mockResolvedValueOnce({ success: false });
 
-        const responseError = await fetchPreview(null, postID);
+        const responseError = await fetchPreview(null, previewPostID);
 
-        expect(postService.fetchPreview).toHaveBeenCalledWith(postID);
-        expect(responseError).toBeUndefined();
+        expect(postService.fetchPreview).toHaveBeenCalledWith(previewPostID);
+        expect(responseError).toBeNull();
       });
 
-      it('Post preview data fetched successfully', async () => {
-        const responseSuccess = await fetchPreview(null, postID);
+      it(messages.success, async () => {
+        const responseSuccess = await fetchPreview(null, previewPostID);
 
-        expect(postService.fetchPreview).toHaveBeenCalledWith(postID);
+        expect(postService.fetchPreview).toHaveBeenCalledWith(previewPostID);
         expect(responseSuccess).toEqual(expectedPost);
       });
     });
 
     describe('fetchPostComments', () => {
       const { fetchPostComments } = actions;
+      const serviceName = 'postService.fetchPostComments';
       const expectedComments = getPostComments(10);
       const postID = 1;
+      const messages = {
+        success: 'should return "' + expectedComments + '" when "' + serviceName + '" request is successful',
+        error: 'should return null when "' + serviceName + '" request is failed'
+      };
 
-      it('Post comments doesn\'t fetch', async () => {
+      it(messages.error, async () => {
         postService.fetchPostComments.mockResolvedValueOnce({ success: false });
 
         const responseError = await fetchPostComments(null, postID);
 
         expect(postService.fetchPostComments).toHaveBeenCalledWith(postID);
-        expect(responseError).toBeUndefined();
+        expect(responseError).toBeNull();
       });
 
-      it('Post comments fetched successfully', async () => {
+      it(messages.success, async () => {
         const responseSuccess = await fetchPostComments(null, postID);
 
         expect(postService.fetchPostComments).toHaveBeenCalledWith(postID);
@@ -344,17 +382,22 @@ describe('Root store module', () => {
     describe('addPost', () => {
       const { addPost } = actions;
       const commitName = 'addPost';
+      const serviceName = 'postService.createPost';
       const newPostData = {
         title: 'New post',
         body: 'New post content',
-        userId: 1
+        userId: getCurrentUser().id
       };
       const createdPost = {
-        id: 100,
+        id: 101,
         ...newPostData
       };
+      const messages = {
+        success: 'should invoke commit "' + commitName + ' with ' + newPostData + '" when "' + serviceName + '" request is successful',
+        error: 'shouldn\'t invoke commit "' + commitName + '" when "' + serviceName + '" request is failed'
+      };
 
-      it('Post didn\'t create', async () => {
+      it(messages.error, async () => {
         postService.createPost.mockResolvedValueOnce({ success: false });
 
         await addPost({ state, commit }, newPostData);
@@ -363,7 +406,7 @@ describe('Root store module', () => {
         expect(commit).not.toHaveBeenCalled();
       });
 
-      it('Post created successfully', async () => {
+      it(messages.success, async () => {
         await addPost({ state, commit }, newPostData);
 
         expect(postService.createPost).toHaveBeenCalledWith(newPostData);
@@ -374,9 +417,14 @@ describe('Root store module', () => {
     describe('deletePost', () => {
       const { deletePost } = actions;
       const commitName = 'deletePost';
+      const serviceName = 'postService.deletePost';
       const deletedPostId = 2;
+      const messages = {
+        success: 'should invoke commit "' + commitName + ' with "' + deletedPostId + '" when "' + serviceName + '" request is successful',
+        error: 'shouldn\'t invoke commit "' + commitName + '" when "' + serviceName + '" request is failed'
+      };
 
-      it('Post didn\'t delete', async () => {
+      it(messages.error, async () => {
         postService.deletePost.mockResolvedValueOnce({ success: false });
 
         await deletePost({ state, commit }, deletedPostId);
@@ -385,7 +433,7 @@ describe('Root store module', () => {
         expect(commit).not.toHaveBeenCalled();
       });
 
-      it('Post deleted successfully', async () => {
+      it(messages.success, async () => {
         await deletePost({ state, commit }, deletedPostId);
 
         expect(postService.deletePost).toHaveBeenCalledWith(deletedPostId);

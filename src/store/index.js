@@ -124,6 +124,8 @@ export const actions = {
     if (response.success) {
       return response.data;
     }
+
+    return null;
   },
 
   async fetchPostComments (context, payload) {
@@ -132,6 +134,8 @@ export const actions = {
     if (response.success) {
       return response.data;
     }
+
+    return null;
   },
 
   async addPost (context, payload) {
