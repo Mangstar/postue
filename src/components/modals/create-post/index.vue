@@ -27,10 +27,11 @@
 
     <template v-slot:footer>
       <span class="dialog-footer">
-        <el-button @click="close">Отмена</el-button>
+        <el-button class="close-btn" @click="close">Отмена</el-button>
         <el-button type="primary"
                    :loading="isLoading"
                    :disabled="isLoading"
+                   class="submit-btn"
                    @click="submit"
         >
           Отправить
@@ -85,16 +86,20 @@ export default {
     },
 
     close () {
-      this.title = '';
-      this.body = '';
+      this.clearData();
       this.$emit('input', false);
     },
 
     prepareData () {
       return {
-        title: this.title,
-        body: this.body
+        title: this.title.trim(),
+        body: this.body.trim()
       };
+    },
+
+    clearData () {
+      this.title = '';
+      this.body = '';
     }
   }
 };
