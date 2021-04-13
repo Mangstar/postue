@@ -1,8 +1,11 @@
 import * as userService from '@/services/users';
+import { cloneDeep } from 'lodash-es';
 
 export const state = {
   list: []
 };
+
+export const initialState = cloneDeep(state);
 
 export const getters = {
   selectOptions (state) {

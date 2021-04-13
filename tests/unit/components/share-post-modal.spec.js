@@ -2,34 +2,22 @@ import { mount, createLocalVue } from '@vue/test-utils';
 import { Dialog, Button } from 'element-ui';
 import { cloneDeep } from 'lodash-es';
 import Vuex from 'vuex';
-import { state as rootState, getters as rootGetters, mutations as rootMutations } from '@/store';
-import { state as usersState, getters as usersGetters, mutations as usersMutations } from '@/store/modules/users';
+import { stateInitial as rootState, getters as rootGetters, mutations as rootMutations } from '@/store';
+import { initialState as usersState, getters as usersGetters, mutations as usersMutations } from '@/store/modules/users';
 import SharePostModal from '@/components/modals/share-post';
 import { getCurrentUser, getPosts, getUsers } from 'faker';
 
 describe('Share Post Modal Component', () => {
   let wrapper;
+  let userModule;
+  let store;
   const postToShare = getPosts(1)[0];
   const propsData = { value: false, post: null };
   const localVue = createLocalVue();
-  const userModule = {
-    namespaced: true,
-    state: cloneDeep(usersState),
-    getters: usersGetters,
-    mutations: usersMutations
-  };
-  const store = new Vuex.Store({
-    state: cloneDeep(rootState),
-    getters: rootGetters,
-    mutations: rootMutations,
-    modules: {
-      users: userModule
-    }
+
+  Object.keys(SharePostModal.methods).forEach(methodName => {
+    jest.spyOn(SharePostModal.methods, methodName).mockName(methodName);
   });
-  const close = jest.spyOn(SharePostModal.methods, 'close').mockName('close');
-  const submit = jest.spyOn(SharePostModal.methods, 'submit').mockName('submit');
-  const sendPost = jest.spyOn(SharePostModal.methods, 'sendPost').mockName('sendPost');
-  const clearData = jest.spyOn(SharePostModal.methods, 'clearData').mockName('clearData');
 
   function setApplicationUsers () {
     const currentUser = getCurrentUser();
@@ -44,6 +32,20 @@ describe('Share Post Modal Component', () => {
   localVue.use(Button);
 
   beforeEach(() => {
+    userModule = {
+      namespaced: true,
+      state: cloneDeep(usersState),
+      getters: usersGetters,
+      mutations: usersMutations
+    };
+    store = new Vuex.Store({
+      state: cloneDeep(rootState),
+      getters: rootGetters,
+      mutations: rootMutations,
+      modules: {
+        users: userModule
+      }
+    });
     wrapper = mount(SharePostModal, {
       stubs: ['el-select', 'el-option', 'el-input'],
       propsData,
@@ -54,7 +56,7 @@ describe('Share Post Modal Component', () => {
     jest.clearAllMocks();
   });
 
-  describe('RENDER: ', () => {
+  describe('RENDER', () => {
     it('shouldn\'t render section with post title if [props.post] is undefined', async () => {
       await wrapper.setProps({ value: true, post: null });
 
@@ -73,7 +75,7 @@ describe('Share Post Modal Component', () => {
     });
   });
 
-  describe('PROPS: ', () => {
+  describe('PROPS', () => {
     describe('value', () => {
       it('should be hidden if value is false', async () => {
         await wrapper.setProps({ value: false });
@@ -89,15 +91,15 @@ describe('Share Post Modal Component', () => {
     });
   });
 
-  describe('EMITS: ', () => {
+  describe('EMITS', () => {
     it('should calls method "close" if "close" event emits', () => {
       wrapper.getComponent({ name: 'el-dialog' }).vm.$emit('close');
 
-      expect(close).toHaveBeenCalled();
+      expect(SharePostModal.methods.close).toHaveBeenCalled();
     });
   });
 
-  describe('BUTTONS CLICKS: ', () => {
+  describe('BUTTONS CLICKS', () => {
     async function triggerButton (buttonClass) {
       const button = wrapper.find(buttonClass);
 
@@ -107,13 +109,13 @@ describe('Share Post Modal Component', () => {
     it('should call method "close" by clicking "Cancel" button', async () => {
       await triggerButton('.cancel-btn');
 
-      expect(close).toHaveBeenCalled();
+      expect(SharePostModal.methods.close).toHaveBeenCalled();
     });
 
     it('should call method "submit" by clicking "Submit" button', async () => {
       await triggerButton('.submit-btn');
 
-      expect(submit).toHaveBeenCalled();
+      expect(SharePostModal.methods.submit).toHaveBeenCalled();
     });
   });
 
@@ -131,18 +133,18 @@ describe('Share Post Modal Component', () => {
     });
   });
 
-  describe('METHODS: ', () => {
+  describe('METHODS', () => {
     describe('submit', () => {
       it('should call method "sendPost"', async () => {
         await wrapper.vm.submit();
 
-        expect(sendPost).toHaveBeenCalled();
+        expect(SharePostModal.methods.sendPost).toHaveBeenCalled();
       });
 
       it('should call method "close"', async () => {
         await wrapper.vm.submit();
 
-        expect(close).toHaveBeenCalled();
+        expect(SharePostModal.methods.close).toHaveBeenCalled();
       });
     });
 
@@ -150,7 +152,7 @@ describe('Share Post Modal Component', () => {
       it('should call method "clearData"', () => {
         wrapper.vm.close();
 
-        expect(clearData).toHaveBeenCalled();
+        expect(SharePostModal.methods.clearData).toHaveBeenCalled();
       });
 
       it('should emit event "input" with false', () => {

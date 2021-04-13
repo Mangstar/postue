@@ -9,9 +9,9 @@ describe('Create Post Modal Component', () => {
   const $store = {
     dispatch: jest.fn().mockName('dispatch')
   };
-  const submit = jest.spyOn(CreatePostModal.methods, 'submit');
-  const close = jest.spyOn(CreatePostModal.methods, 'close');
-  const clearData = jest.spyOn(CreatePostModal.methods, 'clearData');
+  Object.keys(CreatePostModal.methods).forEach(methodName => {
+    jest.spyOn(CreatePostModal.methods, methodName).mockName(methodName);
+  });
 
   localVue.use(Dialog);
   localVue.use(Button);
@@ -47,145 +47,151 @@ describe('Create Post Modal Component', () => {
     });
   });
 
-  describe('PROP VALUE', () => {
-    it('should be hide when is false', async () => {
-      await wrapper.setProps({ value: false });
+  describe('PROPS', () => {
+    describe('value', () => {
+      it('should be hide when is false', async () => {
+        await wrapper.setProps({ value: false });
 
-      expect(wrapper.find('.el-dialog__wrapper').isVisible()).toBe(false);
-    });
+        expect(wrapper.find('.el-dialog__wrapper').isVisible()).toBe(false);
+      });
 
-    it('should be visible when is true', async () => {
-      await wrapper.setProps({ value: true });
+      it('should be visible when is true', async () => {
+        await wrapper.setProps({ value: true });
 
-      expect(wrapper.find('.el-dialog__wrapper').isVisible()).toBe(true);
+        expect(wrapper.find('.el-dialog__wrapper').isVisible()).toBe(true);
+      });
     });
   });
 
-  describe('Click on "Submit" button', () => {
-    let submitBtn;
+  describe('EMITS', () => {
+    it('should calls method "close" if "close" event emits', () => {
+      wrapper.getComponent({ name: 'el-dialog' }).vm.$emit('close');
 
-    beforeEach(() => {
-      submitBtn = wrapper.find('.submit-btn');
+      expect(CreatePostModal.methods.close).toHaveBeenCalled();
+    });
+  });
+
+  describe('BUTTONS CLICKS', () => {
+    async function triggerButton (buttonClass) {
+      const button = wrapper.find(buttonClass);
+
+      await button.trigger('click');
+    }
+
+    it('should call method "close" by clicking "Cancel" button', async () => {
+      await triggerButton('.close-btn');
+
+      expect(CreatePostModal.methods.close).toHaveBeenCalled();
     });
 
-    it('shouldn\'t dispatch action "addPost" if title is empty', async () => {
-      const title = '';
-      const body = 'Как научится писать тесты';
+    it('should call method "submit" by clicking "Submit" button', async () => {
+      await triggerButton('.submit-btn');
 
-      await wrapper.setData({ title, body });
-      await submitBtn.trigger('click');
-
-      expect(submit).toHaveBeenCalled();
-      expect($store.dispatch).not.toHaveBeenCalled();
+      expect(CreatePostModal.methods.submit).toHaveBeenCalled();
     });
+  });
 
-    it('shouldn\'t dispatch action "addPost" if body is empty', async () => {
-      const title = 'Тестирование';
-      const body = '';
+  describe('METHODS', () => {
+    describe('submit', () => {
+      it('shouldn\'t dispatch action "addPost" if title is empty', async () => {
+        const title = '';
+        const body = 'Как научится писать тесты';
 
-      await wrapper.setData({ title, body });
-      await submitBtn.trigger('click');
-
-      expect(submit).toHaveBeenCalled();
-      expect($store.dispatch).not.toHaveBeenCalled();
-    });
-
-    it('shouldn\'t dispatch action "addPost" if title and body are empty', async () => {
-      const title = '';
-      const body = '';
-
-      await wrapper.setData({ title, body });
-      await submitBtn.trigger('click');
-
-      expect(submit).toHaveBeenCalled();
-      expect($store.dispatch).not.toHaveBeenCalled();
-    });
-
-    describe('title and body aren\'t empty', () => {
-      async function triggerSubmitButton () {
         await wrapper.setData({ title, body });
-        await submitBtn.trigger('click');
-      }
+        await wrapper.vm.submit();
 
-      const title = 'Тестирование';
-      const body = 'Как научится писать тесты';
-      const payload = { title, body };
-
-      beforeEach(async () => {
-        await triggerSubmitButton();
-
-        expect(submit).toHaveBeenCalled();
+        expect(CreatePostModal.methods.submit).toHaveBeenCalled();
+        expect($store.dispatch).not.toHaveBeenCalled();
       });
 
-      it('should dispatch action "addPost"', () => {
+      it('shouldn\'t dispatch action "addPost" if body is empty', async () => {
+        const title = 'Тестирование';
+        const body = '';
+
+        await wrapper.setData({ title, body });
+        await wrapper.vm.submit();
+
+        expect(CreatePostModal.methods.submit).toHaveBeenCalled();
+        expect($store.dispatch).not.toHaveBeenCalled();
+      });
+
+      it('shouldn\'t dispatch action "addPost" if title and body are empty', async () => {
+        const title = '';
+        const body = '';
+
+        await wrapper.setData({ title, body });
+        await wrapper.vm.submit();
+
+        expect(CreatePostModal.methods.submit).toHaveBeenCalled();
+        expect($store.dispatch).not.toHaveBeenCalled();
+      });
+
+      it('should dispatch action "addPost" if title and body aren\'t empty', async () => {
+        const title = 'Тестирование';
+        const body = 'Как научится писать тесты';
+        const payload = { title, body };
+
+        await wrapper.setData({ title, body });
+        await wrapper.vm.submit();
+
         expect($store.dispatch).toHaveBeenCalledWith('addPost', payload);
       });
 
-      it('should call method "close"', () => {
-        expect(close).toHaveBeenCalled();
+      it('should call method "close" if title and body aren\'t empty', async () => {
+        const title = 'Тестирование';
+        const body = 'Как научится писать тесты';
+
+        await wrapper.setData({ title, body });
+        await wrapper.vm.submit();
+
+        expect(CreatePostModal.methods.close).toHaveBeenCalled();
       });
     });
-  });
 
-  describe('Click on "Cancel" button', () => {
-    it('should call method "close"', async () => {
-      const cancelBtn = wrapper.find('.close-btn');
+    describe('close', () => {
+      it('should call method "clearData"', async () => {
+        await wrapper.vm.close();
 
-      await cancelBtn.trigger('click');
+        expect(CreatePostModal.methods.clearData).toHaveBeenCalled();
+      });
 
-      expect(close).toHaveBeenCalled();
-    });
-  });
+      it('should emit "input" with false', async () => {
+        await wrapper.vm.close();
 
-  describe('Method "close"', () => {
-    async function triggerCloseButton () {
-      const cancelBtn = wrapper.find('.close-btn');
-
-      await cancelBtn.trigger('click');
-    }
-
-    it('should call method "clearData"', async () => {
-      await triggerCloseButton();
-
-      expect(clearData).toHaveBeenCalled();
+        expect(wrapper.emitted('input')[0]).toEqual([false]);
+      });
     });
 
-    it('should emit "input" with false', async () => {
-      await triggerCloseButton();
+    describe('prepareData', () => {
+      it('should return title and body without spaces', async () => {
+        let title = ' Тестирование  ';
+        let body = '   Как научится писать тесты ';
+        const expectedTitle = 'Тестирование';
+        const expectedBody = 'Как научится писать тесты';
 
-      expect(wrapper.emitted('input')[0]).toEqual([false]);
+        await wrapper.setData({ title, body });
+
+        ({
+          title,
+          body
+        } = wrapper.vm.prepareData());
+
+        expect(title).toBe(expectedTitle);
+        expect(body).toBe(expectedBody);
+      });
     });
-  });
 
-  describe('Method "prepareData"', () => {
-    it('should return title and body without spaces', async () => {
-      let title = ' Тестирование  ';
-      let body = '   Как научится писать тесты ';
-      const expectedTitle = 'Тестирование';
-      const expectedBody = 'Как научится писать тесты';
+    describe('clearData', () => {
+      it('should reset title and body', async () => {
+        const title = 'Тестирование';
+        const body = 'Как научится писать тесты';
 
-      await wrapper.setData({ title, body });
+        await wrapper.setData({ title, body });
+        wrapper.vm.clearData();
 
-      ({
-        title,
-        body
-      } = wrapper.vm.prepareData());
-
-      expect(title).toBe(expectedTitle);
-      expect(body).toBe(expectedBody);
-    });
-  });
-
-  describe('Method "clearData"', () => {
-    it('should reset title and body', async () => {
-      const title = 'Тестирование';
-      const body = 'Как научится писать тесты';
-
-      await wrapper.setData({ title, body });
-      wrapper.vm.clearData();
-
-      expect(wrapper.vm.title).toBe('');
-      expect(wrapper.vm.body).toBe('');
+        expect(wrapper.vm.title).toBe('');
+        expect(wrapper.vm.body).toBe('');
+      });
     });
   });
 });

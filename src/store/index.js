@@ -5,6 +5,7 @@ import { users } from './modules';
 
 import * as postService from '../services/posts';
 import * as userService from '../services/users';
+import { cloneDeep } from 'lodash-es';
 
 Vue.use(Vuex);
 
@@ -25,6 +26,8 @@ export const state = {
     error: null
   }
 };
+
+export const stateInitial = cloneDeep(state);
 
 export const getters = {
   currentUserId (state) {
