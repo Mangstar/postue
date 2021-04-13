@@ -10,14 +10,14 @@
       </h3>
     </template>
 
-    <section v-if="post" class="mb-15">
+    <section v-if="post" class="post-title-section mb-15">
       <div class="mb-5">
         <strong>Пост: </strong>
       </div>
       <el-input :value="post.title" disabled />
     </section>
 
-    <section>
+    <section class="post-recipient-section">
       <div class="mb-5">
         <strong>Получатель: </strong>
       </div>
@@ -36,10 +36,11 @@
 
     <template v-slot:footer>
       <span class="dialog-footer">
-        <el-button @click="close">Отмена</el-button>
+        <el-button class="cancel-btn" @click="close">Отмена</el-button>
         <el-button type="primary"
                    :loading="isLoading"
                    :disabled="isLoading"
+                   class="submit-btn"
                    @click="submit"
         >
           Отправить
@@ -95,15 +96,23 @@ export default {
     async submit () {
       this.isLoading = true;
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await this.sendPost();
 
       this.isLoading = false;
 
       this.close();
     },
 
-    close () {
+    sendPost (ms = 200) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+
+    clearData () {
       this.userTo = [];
+    },
+
+    close () {
+      this.clearData();
       this.$emit('input', false);
     }
   }

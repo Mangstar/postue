@@ -1,4 +1,4 @@
-import * as userService from '../../../services/users';
+import * as userService from '@/services/users';
 
 export const state = {
   list: []
