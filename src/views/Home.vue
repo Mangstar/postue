@@ -14,7 +14,7 @@
       </el-col>
 
       <el-col :span="3" class="text-align-right">
-        <el-button type="primary" size="middle" @click="open.addPostModal = true">
+        <el-button type="primary" size="middle" class="add-post-btn" @click="open.addPostModal = true">
           Добавить пост
         </el-button>
       </el-col>
@@ -22,11 +22,11 @@
 
     <el-row type="flex" :gutter="30">
       <el-col :span="16">
-        <p v-show="!hasPosts" class="base-text">
+        <p v-show="!hasPosts" class="posts-empty base-text">
           Постов нет
         </p>
 
-        <el-row v-show="hasPosts" type="flex" :gutter="20" class="f-wrap">
+        <el-row v-show="hasPosts" type="flex" :gutter="20" class="posts-list f-wrap">
           <el-col v-for="post in visiblePosts"
                   :key="post.id"
                   :span="8"
@@ -98,6 +98,16 @@ export default {
     }
   },
 
+  watch: {
+    postPreviewId () {
+      if (this.postPreviewId === null) {
+        this.$router.push({
+          name: 'home'
+        });
+      }
+    }
+  },
+
   created () {
     this.loadPage();
   },
@@ -117,15 +127,11 @@ export default {
       this.$store.dispatch('deletePost', id);
 
       this.postPreviewId = null;
-
-      this.$router.push({
-        name: 'home'
-      });
     },
 
     showPreview (id) {
       if (this.postPreviewId === id) {
-        return;
+        return undefined;
       }
 
       this.postPreviewId = id;

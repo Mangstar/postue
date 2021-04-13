@@ -27,7 +27,7 @@ export const state = {
   }
 };
 
-export const stateInitial = cloneDeep(state);
+export const initialState = cloneDeep(state);
 
 export const getters = {
   currentUserId (state) {
