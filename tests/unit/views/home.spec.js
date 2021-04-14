@@ -6,7 +6,6 @@ import VueRouter from 'vue-router';
 import { initialState, getters, mutations, actions } from '@/store';
 import Home from '@/views/Home';
 import PostPreview from '@/views/PostPreview';
-// import AppPost from '@/components/post';
 import { getPosts } from 'faker';
 
 jest.mock('@/services/posts');
@@ -44,7 +43,7 @@ describe('HOME PAGE', () => {
       path: '/posts/:id',
       name: 'post-page',
       props: true,
-      component: () => import(/* webpackChunkName: "post-page" */ '../views/PostPage'),
+      component: () => import(/* webpackChunkName: "post-page" */ '@/views/PostPage'),
       meta: {
         requiresAuth: true
       }
@@ -87,75 +86,87 @@ describe('HOME PAGE', () => {
   });
 
   describe('RENDER', () => {
-    it('should render Home page', () => {
-      expect(wrapper.exists()).toBe(true);
+    describe('post list', () => {
+      const EMPTY_POST_LIST_SELECTOR = '.post-empty';
+      const FULL_POST_LIST_SELECTOR = '.post-list';
+
+      it('should render Home page', () => {
+        expect(wrapper.exists()).toBe(true);
+      });
+
+      it('should render paragraph "Постов нет" if [store.visiblePosts] is empty array', async () => {
+        await wrapper.vm.$store.commit('setPosts', []);
+
+        expect(wrapper.find(EMPTY_POST_LIST_SELECTOR).isVisible()).toBe(true);
+        expect(wrapper.find(FULL_POST_LIST_SELECTOR).isVisible()).toBe(false);
+      });
+
+      it('should render posts list if [store.visiblePosts] is not empty array', async () => {
+        await wrapper.vm.$store.commit('setPosts', getPosts(20));
+
+        expect(wrapper.find(FULL_POST_LIST_SELECTOR).isVisible()).toBe(true);
+        expect(wrapper.find(EMPTY_POST_LIST_SELECTOR).isVisible()).toBe(false);
+      });
     });
 
-    it('should render paragraph "Постов нет" if [store.visiblePosts] is empty array', async () => {
-      await wrapper.vm.$store.commit('setPosts', []);
+    describe('post active class', () => {
+      it('should set class "is-active" to post with id="1" which is open on preview', async () => {
+        await wrapper.setData({ postPreviewId: 1 });
 
-      expect(wrapper.find('.posts-empty').isVisible()).toBe(true);
-      expect(wrapper.find('.posts-list').isVisible()).toBe(false);
-    });
+        expect(wrapper.find('app-post-stub[id="1"]').classes('is-active')).toBe(true);
+      });
 
-    it('should render posts list if [store.visiblePosts] is not empty array', async () => {
-      await wrapper.vm.$store.commit('setPosts', getPosts(20));
+      it('should set class "is-active" to post with id="3" which is open on preview', async () => {
+        await wrapper.setData({ postPreviewId: 3 });
 
-      expect(wrapper.find('.posts-list').isVisible()).toBe(true);
-      expect(wrapper.find('.posts-empty').isVisible()).toBe(false);
+        expect(wrapper.find('app-post-stub[id="3"]').classes('is-active')).toBe(true);
+      });
     });
   });
 
-  describe('LIFECIRCLE HOOKS', () => {
+  describe('LIFECYCLE HOOKS', () => {
     it('created', () => {
-      wrapper.vm.$options.created.mockReset();
       expect(Home.methods.loadPage).toHaveBeenCalled();
     });
   });
 
   describe('EMITS', () => {
-    it('should calls method "deletePost" if "delete-post" event emits', () => {
-      wrapper.find('app-post-stub').vm.$emit('delete-post');
+    describe('app-post', () => {
+      const POST_ITEM_SELECTOR = 'app-post-stub';
 
-      expect(Home.methods.deletePost).toHaveBeenCalled();
+      it('should calls method "deletePost" if "delete-post" event emits', () => {
+        wrapper.find(POST_ITEM_SELECTOR).vm.$emit('delete-post');
+
+        expect(Home.methods.deletePost).toHaveBeenCalled();
+      });
+
+      it('should calls method "showPreview" if "show-preview" event emits', () => {
+        wrapper.find(POST_ITEM_SELECTOR).vm.$emit('show-preview');
+
+        expect(Home.methods.showPreview).toHaveBeenCalled();
+      });
+
+      it('should calls method "sharePost" if "share-post" event emits', () => {
+        wrapper.find(POST_ITEM_SELECTOR).vm.$emit('share-post');
+
+        expect(Home.methods.sharePost).toHaveBeenCalled();
+      });
     });
 
-    it('should calls method "showPreview" if "show-preview" event emits', () => {
-      wrapper.find('app-post-stub').vm.$emit('show-preview');
+    describe('share-post-modal', () => {
+      const SHARE_POST_MODAL_SELECTOR = 'share-post-modal-stub';
 
-      expect(Home.methods.showPreview).toHaveBeenCalled();
-    });
+      it('should set [data.postToShare] to null if "input" event emits', () => {
+        wrapper.find(SHARE_POST_MODAL_SELECTOR).vm.$emit('input');
 
-    it('should calls method "sharePost" if "share-post" event emits', () => {
-      wrapper.find('app-post-stub').vm.$emit('share-post');
-
-      expect(Home.methods.sharePost).toHaveBeenCalled();
-    });
-
-    it('should set [data.postToShare] to null if "input" event emits', () => {
-      wrapper.find('share-post-modal-stub').vm.$emit('input');
-
-      expect(wrapper.vm.postToShare).toBeNull();
-    });
-  });
-
-  describe('WATCH', () => {
-    describe('postPreviewId', () => {
-      it('should navigate to Home page if [data.postPreviewId] is null', async () => {
-        await wrapper.setData({ postPreviewId: 1 });
-        expect(pushSpy).not.toHaveBeenCalled();
-
-        await wrapper.setData({ postPreviewId: null });
-        expect(pushSpy).toHaveBeenCalledWith({
-          name: 'home'
-        });
+        expect(wrapper.vm.postToShare).toBeNull();
       });
     });
   });
 
   describe('BUTTONS CLICKS', () => {
-    async function triggerButton (buttonClass) {
-      const button = wrapper.find(buttonClass);
+    async function triggerButton (selector) {
+      const button = wrapper.find(selector);
 
       await button.trigger('click');
     }
@@ -199,37 +210,45 @@ describe('HOME PAGE', () => {
         expect(dispatchSpy).toHaveBeenCalledWith(actionName, postID);
       });
 
-      it('should reset "data.postPreviewId"', () => {
+      it('should reset [data.postPreviewId]', () => {
         expect(wrapper.vm.postPreviewId).toBeNull();
       });
     });
 
     describe('showPreview', () => {
-      const postPreviewID = 1;
+      const postPreviewID = 2;
 
-      it('should completed immediately if chosen post is equal opened post', async () => {
-        await wrapper.setData({ postPreviewId: 1 });
+      afterEach(() => {
+        if (
+          wrapper.vm.$route.name === 'post-preview' &&
+          Number(wrapper.vm.$route.params.id) === postPreviewID
+        ) {
+          router.push({ name: 'post-preview', params: { id: 1 } });
+        }
+      });
+
+      it('should completed immediately if selected post is open opened post', async () => {
+        await wrapper.setData({ postPreviewId: 2 });
 
         const response = wrapper.vm.showPreview(postPreviewID);
 
         expect(response).toBeUndefined();
       });
 
-      it('should set [data.postPreviewId] to chosen post id', () => {
+      it('should set [data.postPreviewId] to selected post.id', () => {
         wrapper.vm.showPreview(postPreviewID);
         expect(wrapper.vm.postPreviewId).toBe(postPreviewID);
-
-        wrapper.vm.showPreview(5);
-        expect(wrapper.vm.postPreviewId).toBe(5);
       });
 
-      it('should open Post preview with chosen one', () => {
-        wrapper.vm.showPreview(postPreviewID);
-
-        expect(pushSpy).toHaveBeenCalledWith({
+      it('should open "Post preview" with selected post', () => {
+        const expectedNavParams = {
           name: 'post-preview',
           params: { id: postPreviewID }
-        });
+        };
+
+        wrapper.vm.showPreview(postPreviewID);
+
+        expect(pushSpy).toHaveBeenCalledWith(expectedNavParams);
       });
     });
 
@@ -241,7 +260,7 @@ describe('HOME PAGE', () => {
         wrapper.vm.sharePost(postID);
       });
 
-      it('should find by id and set [data.postToShare] to clicked post', () => {
+      it('should find clicked post by id and set it to [data.postToShare]', () => {
         const expectedPost = {
           id: 5,
           title: 'Post 5',
@@ -252,7 +271,7 @@ describe('HOME PAGE', () => {
         expect(wrapper.vm.postToShare).toEqual(expectedPost);
       });
 
-      it('should open Share post modal', () => {
+      it('should open "Share post modal"', () => {
         expect(wrapper.vm.open.sharePostModal).toBe(true);
       });
     });
@@ -260,15 +279,14 @@ describe('HOME PAGE', () => {
 
   describe('ROUTER-VIEW', () => {
     const postID = 5;
-    const innerComponentName = 'post-preview';
 
-    it('should render "post-preview" page when [data.postPreviewId] is defined', async () => {
+    it('should render "Post preview page" when [data.postPreviewId] is defined', async () => {
       await wrapper.vm.$router.push({
-        name: innerComponentName,
+        name: 'post-preview',
         params: { id: postID }
       });
 
-      expect(wrapper.getComponent({ name: innerComponentName }).exists()).toBe(true);
+      expect(wrapper.getComponent({ name: 'post-preview' }).exists()).toBe(true);
     });
   });
 });

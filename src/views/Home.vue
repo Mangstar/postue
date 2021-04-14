@@ -1,7 +1,7 @@
 <template>
   <div class="home-page">
     <h1 class="main-title">
-      Postue
+      {{ appTitle }}
     </h1>
 
     <el-row type="flex"
@@ -22,11 +22,11 @@
 
     <el-row type="flex" :gutter="30">
       <el-col :span="16">
-        <p v-show="!hasPosts" class="posts-empty base-text">
+        <p v-show="!hasPosts" class="post-empty base-text">
           Постов нет
         </p>
 
-        <el-row v-show="hasPosts" type="flex" :gutter="20" class="posts-list f-wrap">
+        <el-row v-show="hasPosts" type="flex" :gutter="20" class="post-list f-wrap">
           <el-col v-for="post in visiblePosts"
                   :key="post.id"
                   :span="8"
@@ -92,6 +92,10 @@ export default {
     ...mapGetters({
       visiblePosts: 'visiblePosts'
     }),
+
+    appTitle () {
+      return process.env.VUE_APP_TITLE;
+    },
 
     hasPosts () {
       return this.visiblePosts.length !== 0;
