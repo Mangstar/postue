@@ -21,11 +21,7 @@ describe('HOME PAGE', () => {
   const mutations = {
     startLoading: jest.fn().mockName('startLoading'),
     finishLoading: jest.fn().mockName('finishLoading'),
-    setPosts: jest.fn()
-      .mockImplementation((state, payload) => {
-        state.posts = payload;
-      })
-      .mockName('setPosts'),
+    setPosts: jest.fn().mockName('setPosts'),
     deletePost: jest.fn().mockName('deletePost')
   };
   const actions = {
@@ -36,6 +32,7 @@ describe('HOME PAGE', () => {
     deletePost: jest.fn().mockName('deletePost')
   };
   let router;
+  let commitSpy;
   let dispatchSpy;
   let pushSpy;
   const stubs = ['app-filter', 'app-post', 'create-post-modal', 'share-post-modal'];
@@ -95,6 +92,7 @@ describe('HOME PAGE', () => {
     });
     router = new VueRouter({ routes });
 
+    commitSpy = jest.spyOn(store, 'commit').mockName('commit');
     dispatchSpy = jest.spyOn(store, 'dispatch').mockName('dispatch');
     pushSpy = jest.spyOn(router, 'push').mockName('router.push');
 
@@ -109,45 +107,60 @@ describe('HOME PAGE', () => {
   });
 
   describe('RENDER', () => {
-    describe('post list', () => {
+    it('should render Home page', () => {
+      expect(wrapper.exists()).toBe(true);
+    });
+
+    it('should render page title with text from .env file', () => {
+      expect(wrapper.find('.main-title').exists()).toBe(true);
+      // eslint-disable-next-line no-undef
+      expect(wrapper.find('.main-title').text()).toBe(APP_VUE_TITLE);
+    });
+
+    it('should render "Post filter" component', () => {
+      expect(wrapper.getComponent({ name: 'app-filter' }).exists()).toBe(true);
+    });
+
+    it('should render "Добавить пост" button', () => {
+      expect(wrapper.find('.add-post-btn').exists()).toBe(true);
+    });
+
+    it('should render "Share post modal" component', () => {
+      expect(wrapper.getComponent({ name: 'share-post-modal' }).exists()).toBe(true);
+    });
+
+    it('should render "Create post modal" component', () => {
+      expect(wrapper.getComponent({ name: 'create-post-modal' }).exists()).toBe(true);
+    });
+
+    describe('Conditional rendering of post list', () => {
       const EMPTY_POST_LIST_SELECTOR = '.post-empty';
       const FULL_POST_LIST_SELECTOR = '.post-list';
 
-      it('should render Home page', () => {
-        expect(wrapper.exists()).toBe(true);
-      });
-
-      it('should render paragraph "Постов нет" if [store.visiblePosts] is empty array', async () => {
-        await wrapper.vm.$store.commit('setPosts', []);
-
+      it('should render paragraph "Постов нет" if [store.visiblePosts] is an empty array', () => {
         expect(wrapper.find(EMPTY_POST_LIST_SELECTOR).isVisible()).toBe(true);
         expect(wrapper.find(FULL_POST_LIST_SELECTOR).isVisible()).toBe(false);
       });
 
-      it('should render posts list if [store.visiblePosts] is not empty array', async () => {
-        await wrapper.vm.$store.commit('setPosts', getPosts(20));
+      it('should render posts list if [store.visiblePosts] isn\'t an empty array', async () => {
+        state.posts = getPosts(20);
+
+        await wrapper.vm.$nextTick();
 
         expect(wrapper.find(FULL_POST_LIST_SELECTOR).isVisible()).toBe(true);
         expect(wrapper.find(EMPTY_POST_LIST_SELECTOR).isVisible()).toBe(false);
       });
     });
 
-    describe('post active class', () => {
-      beforeEach(() => {
-        wrapper.vm.$store.commit('setPosts', getPosts(20));
-      });
+    it('should set class "is-active" to post which open on preview', async () => {
+      state.posts = getPosts(20);
 
-      it('should set class "is-active" to post with id="1" which is open on preview', async () => {
-        await wrapper.setData({ postPreviewId: 1 });
+      await wrapper.setData({ postPreviewId: 1 });
+      expect(wrapper.find('app-post-stub[id="1"]').classes('is-active')).toBe(true);
 
-        expect(wrapper.find('app-post-stub[id="1"]').classes('is-active')).toBe(true);
-      });
-
-      it('should set class "is-active" to post with id="3" which is open on preview', async () => {
-        await wrapper.setData({ postPreviewId: 3 });
-
-        expect(wrapper.find('app-post-stub[id="3"]').classes('is-active')).toBe(true);
-      });
+      await wrapper.setData({ postPreviewId: 3 });
+      expect(wrapper.find('app-post-stub[id="1"]').classes('is-active')).toBe(false);
+      expect(wrapper.find('app-post-stub[id="3"]').classes('is-active')).toBe(true);
     });
   });
 
@@ -160,37 +173,29 @@ describe('HOME PAGE', () => {
   describe('EMITS', () => {
     describe('app-post', () => {
       beforeEach(() => {
-        wrapper.vm.$store.commit('setPosts', getPosts(1));
+        state.posts = getPosts(1);
       });
 
-      const POST_ITEM_SELECTOR = 'app-post-stub';
-
       it('should calls method "deletePost" if "delete-post" event emits', () => {
-        wrapper.find(POST_ITEM_SELECTOR).vm.$emit('delete-post');
-
+        wrapper.getComponent({ name: 'app-post' }).vm.$emit('delete-post');
         expect(Home.methods.deletePost).toHaveBeenCalled();
       });
 
       it('should calls method "showPreview" if "show-preview" event emits', () => {
-        wrapper.find(POST_ITEM_SELECTOR).vm.$emit('show-preview');
-
+        wrapper.getComponent({ name: 'app-post' }).vm.$emit('show-preview');
         expect(Home.methods.showPreview).toHaveBeenCalled();
       });
 
       it('should calls method "sharePost" if "share-post" event emits', () => {
-        wrapper.find(POST_ITEM_SELECTOR).vm.$emit('share-post');
-
+        wrapper.getComponent({ name: 'app-post' }).vm.$emit('share-post');
         expect(Home.methods.sharePost).toHaveBeenCalled();
       });
     });
 
     describe('share-post-modal', () => {
-      const SHARE_POST_MODAL_SELECTOR = 'share-post-modal-stub';
-
-      it('should set [data.postToShare] to null if "input" event emits', () => {
-        wrapper.find(SHARE_POST_MODAL_SELECTOR).vm.$emit('input');
-
-        expect(wrapper.vm.postToShare).toBeNull();
+      it('should call method "resetSharePost" when "input" event emits', () => {
+        wrapper.getComponent({ name: 'share-post-modal' }).vm.$emit('input');
+        expect(Home.methods.resetSharePost).toHaveBeenCalled();
       });
     });
   });
@@ -213,36 +218,46 @@ describe('HOME PAGE', () => {
 
   describe('METHODS', () => {
     describe('loadPage', () => {
-      it('should dispatch "fetchAll" action if [state.posts] is empty array', async () => {
-        wrapper.vm.$store.commit('setPosts', []);
-        await wrapper.vm.loadPage();
+      beforeEach(() => {
+        commitSpy.mockClear();
+        dispatchSpy.mockClear();
+      });
 
+      it('should dispatch action "fetchAll" if [state.posts] is an empty array', async () => {
+        await wrapper.vm.loadPage();
         expect(dispatchSpy).toHaveBeenCalledWith('fetchAll');
       });
 
-      it('shouldn\'t dispatch "fetchAll" action if [state.posts] is not empty array', async () => {
-        dispatchSpy.mockClear();
+      it('shouldn\'t dispatch action "fetchAll" if [state.posts] isn\'t an empty array', async () => {
+        state.posts = getPosts(20);
 
-        wrapper.vm.$store.commit('setPosts', getPosts(20));
         await wrapper.vm.loadPage();
-
         expect(dispatchSpy).not.toHaveBeenCalled();
       });
 
-      it('should call "startLoading" mutation before fetch start', async () => {
-        wrapper.vm.$store.commit('setPosts', []);
-
+      it('should commit mutations "startLoading", "finishLoading" if [state.posts] is an empty array', async () => {
         await wrapper.vm.loadPage();
 
-        expect(mutations.startLoading).toHaveBeenCalled();
+        expect(commitSpy.mock.calls[0]).toEqual(['startLoading']);
+        expect(commitSpy.mock.calls[1]).toEqual(['finishLoading']);
       });
 
-      it('should call "finishLoading" mutation after fetch end', async () => {
-        wrapper.vm.$store.commit('setPosts', []);
+      it('shouldn\'t commit mutations "startLoading", "finishLoading" if [state.posts] isn\'t an empty array', async () => {
+        state.posts = getPosts(20);
 
         await wrapper.vm.loadPage();
 
-        expect(mutations.finishLoading).toHaveBeenCalled();
+        expect(commitSpy).not.toHaveBeenCalled();
+        expect(commitSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('openPostModal', () => {
+      it('should toggle [data.open.addPostModal] to true', () => {
+        expect(wrapper.vm.open.addPostModal).toBe(false);
+
+        wrapper.vm.openPostModal();
+        expect(wrapper.vm.open.addPostModal).toBe(true);
       });
     });
 
@@ -253,10 +268,8 @@ describe('HOME PAGE', () => {
         wrapper.vm.deletePost(postID);
       });
 
-      it('should dispatch "deletePost" action with post id', () => {
-        const actionName = 'deletePost';
-
-        expect(dispatchSpy).toHaveBeenCalledWith(actionName, postID);
+      it('should dispatch action "deletePost" with post id', () => {
+        expect(dispatchSpy).toHaveBeenCalledWith('deletePost', postID);
       });
 
       it('should reset [data.postPreviewId]', () => {
@@ -265,31 +278,24 @@ describe('HOME PAGE', () => {
     });
 
     describe('showPreview', () => {
-      const postPreviewID = 2;
+      it('should completed immediately if selected post is already opened', async () => {
+        const postPreviewID = 1;
 
-      afterEach(() => {
-        if (
-          wrapper.vm.$route.name === 'post-preview' &&
-          Number(wrapper.vm.$route.params.id) === postPreviewID
-        ) {
-          router.push({ name: 'post-preview', params: { id: 1 } });
-        }
+        await wrapper.setData({ postPreviewId: 1 });
+
+        wrapper.vm.showPreview(postPreviewID);
+        expect(pushSpy).not.toHaveBeenCalled();
       });
 
-      it('should completed immediately if selected post is open opened post', async () => {
-        await wrapper.setData({ postPreviewId: 2 });
+      it('should set [data.postPreviewId] to selected post id', () => {
+        const postPreviewID = 2;
 
-        const response = wrapper.vm.showPreview(postPreviewID);
-
-        expect(response).toBeUndefined();
-      });
-
-      it('should set [data.postPreviewId] to selected post.id', () => {
         wrapper.vm.showPreview(postPreviewID);
         expect(wrapper.vm.postPreviewId).toBe(postPreviewID);
       });
 
-      it('should open "Post preview" with selected post', () => {
+      it('should navigate to "Post preview page" of the selected post', () => {
+        const postPreviewID = 3;
         const expectedNavParams = {
           name: 'post-preview',
           params: { id: postPreviewID }
@@ -302,26 +308,51 @@ describe('HOME PAGE', () => {
     });
 
     describe('sharePost', () => {
-      const postID = 5;
-
       beforeEach(() => {
-        wrapper.vm.$store.commit('setPosts', getPosts(10));
-        wrapper.vm.sharePost(postID);
+        state.posts = getPosts(10);
       });
 
-      it('should find clicked post by id and set it to [data.postToShare]', () => {
-        const expectedPost = {
-          id: 5,
-          title: 'Post 5',
-          body: 'Post content 5',
-          userId: 1
-        };
+      it('should find selected post by id and set it to [data.postToShare]', () => {
+        const postIds = [2, 5, 7];
 
-        expect(wrapper.vm.postToShare).toEqual(expectedPost);
+        postIds.forEach(id => {
+          const expectedPost = {
+            id: id,
+            title: 'Post ' + id,
+            body: 'Post content ' + id,
+            userId: 1
+          };
+
+          wrapper.vm.sharePost(id);
+          expect(wrapper.vm.postToShare).toEqual(expectedPost);
+        });
       });
 
       it('should open "Share post modal"', () => {
+        const postID = 2;
+
+        expect(wrapper.vm.open.sharePostModal).toBe(false);
+
+        wrapper.vm.sharePost(postID);
+
         expect(wrapper.vm.open.sharePostModal).toBe(true);
+      });
+    });
+
+    describe('resetSharePost', () => {
+      it('should set [data.postToShare] to null', async () => {
+        const postToShare = {
+          id: 1,
+          title: 'Post 1',
+          body: 'Post content 1',
+          userId: 1
+        };
+
+        await wrapper.setData({ postToShare });
+
+        expect(wrapper.vm.postToShare).toEqual(postToShare);
+        wrapper.vm.resetSharePost();
+        expect(Home.methods.resetSharePost).toHaveBeenCalled();
       });
     });
   });

@@ -8,6 +8,10 @@ module.exports = {
   // The root directory that Jest should scan for tests and modules within
   rootDir: './',
 
+  globals: {
+    APP_VUE_TITLE: process.env.VUE_APP_TITLE
+  },
+
   // Indicates whether the coverage information should be collected while executing the test
   collectCoverage: false,
 

@@ -10,7 +10,7 @@
             class="w-100 mb-20"
     >
       <el-col :span="6">
-        <app-filter />
+        <app-filter class="post-filter" />
       </el-col>
 
       <el-col :span="3" class="text-align-right">
@@ -51,7 +51,7 @@
 
     <share-post-modal v-model="open.sharePostModal"
                       :post="postToShare"
-                      @input="postToShare = null"
+                      @input="resetSharePost"
     />
 
     <create-post-modal v-model="open.addPostModal" />
@@ -139,7 +139,7 @@ export default {
 
     showPreview (id) {
       if (this.postPreviewId === id) {
-        return undefined;
+        return;
       }
 
       this.postPreviewId = id;
@@ -154,6 +154,10 @@ export default {
       this.postToShare = this.visiblePosts.find(post => post.id === id);
 
       this.open.sharePostModal = true;
+    },
+
+    resetSharePost () {
+      this.postToShare = null;
     }
   }
 };
