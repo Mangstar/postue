@@ -1,12 +1,10 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import { Row, Col, Button } from 'element-ui';
-import { cloneDeep } from 'lodash-es';
 import Vuex from 'vuex';
 import VueRouter from 'vue-router';
-import { initialState, getters, mutations, actions } from '@/store';
 import Home from '@/views/Home';
 import PostPreview from '@/views/PostPreview';
-import { getPosts } from 'faker';
+import { getPosts, createPost } from 'faker';
 
 jest.mock('@/services/posts');
 jest.mock('@/services/users');
@@ -14,6 +12,29 @@ jest.mock('@/services/users');
 describe('HOME PAGE', () => {
   let wrapper;
   let store;
+  let state;
+  const getters = {
+    visiblePosts (state) {
+      return state.posts;
+    }
+  };
+  const mutations = {
+    startLoading: jest.fn().mockName('startLoading'),
+    finishLoading: jest.fn().mockName('finishLoading'),
+    setPosts: jest.fn()
+      .mockImplementation((state, payload) => {
+        state.posts = payload;
+      })
+      .mockName('setPosts'),
+    deletePost: jest.fn().mockName('deletePost')
+  };
+  const actions = {
+    fetchAll: jest.fn().mockName('fetchAll'),
+    fetchPreview: jest.fn()
+      .mockImplementation(id => createPost(id))
+      .mockName('fetchPreview'),
+    deletePost: jest.fn().mockName('deletePost')
+  };
   let router;
   let dispatchSpy;
   let pushSpy;
@@ -52,7 +73,7 @@ describe('HOME PAGE', () => {
   const localVue = createLocalVue();
 
   Object.keys(Home.methods).forEach(methodName => {
-    jest.spyOn(Home.methods, methodName);
+    jest.spyOn(Home.methods, methodName).mockName(methodName);
   });
 
   localVue.use(Vuex);
@@ -62,16 +83,22 @@ describe('HOME PAGE', () => {
   localVue.use(Button);
 
   beforeEach(() => {
+    state = {
+      posts: []
+    };
+
     store = new Vuex.Store({
-      state: cloneDeep(initialState),
+      state,
       getters,
       mutations,
       actions
     });
     router = new VueRouter({ routes });
 
-    dispatchSpy = jest.spyOn(store, 'dispatch').mockName('store.dispatch');
+    dispatchSpy = jest.spyOn(store, 'dispatch').mockName('dispatch');
     pushSpy = jest.spyOn(router, 'push').mockName('router.push');
+
+    jest.clearAllMocks();
 
     wrapper = mount(Home, {
       stubs,
@@ -79,10 +106,6 @@ describe('HOME PAGE', () => {
       store,
       router
     });
-
-    wrapper.vm.$options.created = jest.fn();
-
-    jest.clearAllMocks();
   });
 
   describe('RENDER', () => {
@@ -110,6 +133,10 @@ describe('HOME PAGE', () => {
     });
 
     describe('post active class', () => {
+      beforeEach(() => {
+        wrapper.vm.$store.commit('setPosts', getPosts(20));
+      });
+
       it('should set class "is-active" to post with id="1" which is open on preview', async () => {
         await wrapper.setData({ postPreviewId: 1 });
 
@@ -132,6 +159,10 @@ describe('HOME PAGE', () => {
 
   describe('EMITS', () => {
     describe('app-post', () => {
+      beforeEach(() => {
+        wrapper.vm.$store.commit('setPosts', getPosts(1));
+      });
+
       const POST_ITEM_SELECTOR = 'app-post-stub';
 
       it('should calls method "deletePost" if "delete-post" event emits', () => {
@@ -190,10 +221,28 @@ describe('HOME PAGE', () => {
       });
 
       it('shouldn\'t dispatch "fetchAll" action if [state.posts] is not empty array', async () => {
+        dispatchSpy.mockClear();
+
         wrapper.vm.$store.commit('setPosts', getPosts(20));
         await wrapper.vm.loadPage();
 
         expect(dispatchSpy).not.toHaveBeenCalled();
+      });
+
+      it('should call "startLoading" mutation before fetch start', async () => {
+        wrapper.vm.$store.commit('setPosts', []);
+
+        await wrapper.vm.loadPage();
+
+        expect(mutations.startLoading).toHaveBeenCalled();
+      });
+
+      it('should call "finishLoading" mutation after fetch end', async () => {
+        wrapper.vm.$store.commit('setPosts', []);
+
+        await wrapper.vm.loadPage();
+
+        expect(mutations.finishLoading).toHaveBeenCalled();
       });
     });
 

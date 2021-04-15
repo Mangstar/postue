@@ -14,7 +14,7 @@
       </el-col>
 
       <el-col :span="3" class="text-align-right">
-        <el-button type="primary" size="middle" class="add-post-btn" @click="open.addPostModal = true">
+        <el-button type="primary" size="middle" class="add-post-btn" @click="openPostModal">
           Добавить пост
         </el-button>
       </el-col>
@@ -125,6 +125,10 @@ export default {
 
         this.$store.commit('finishLoading');
       }
+    },
+
+    openPostModal () {
+      this.open.addPostModal = true;
     },
 
     deletePost (id) {
